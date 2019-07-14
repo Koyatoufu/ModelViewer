@@ -1,0 +1,13 @@
+*.tlog
+*.pch
+*.obj
+*.log
+*.ilk
+*.ipch
+Render/x64/Debug/Render.idb
+*.idb
+*.db
+*.suo
+*.db-shm
+*.opendb
+*.db-wal
