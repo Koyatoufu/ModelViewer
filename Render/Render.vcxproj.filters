@@ -13,16 +13,46 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\Render">
+      <UniqueIdentifier>{c0455ec6-43b1-45be-a8e2-681616352265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Render\Model">
+      <UniqueIdentifier>{9f3fc770-47fc-4d49-a62b-b6b06dcec0dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Etc">
+      <UniqueIdentifier>{10ab6b7b-4a40-4ad3-864a-558f4f62792d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="StaticModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDefine.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일\Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일\Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +60,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseModel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

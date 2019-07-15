@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer", "Viewer.vcxproj", "{282F4625-7D0B-43EA-B4C6-27B51EA1D6CC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{03971EB0-E93D-4A8D-94D4-546DDF997858} = {03971EB0-E93D-4A8D-94D4-546DDF997858}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Render", "..\Render\Render.vcxproj", "{03971EB0-E93D-4A8D-94D4-546DDF997858}"
 EndProject

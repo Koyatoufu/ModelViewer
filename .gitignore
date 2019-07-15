@@ -11,3 +11,4 @@ Render/x64/Debug/Render.idb
 *.db-shm
 *.opendb
 *.db-wal
+*.aps

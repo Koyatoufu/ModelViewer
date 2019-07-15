@@ -1,0 +1,31 @@
+#pragma once
+
+#include <d3d11.h>
+#include <dxgi.h>
+#include <DirectXMath.h>
+
+#include <fstream>
+
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
+
+#define SAFE_DELETE(point) { if(point){ delete point; point = nullptr; } }
+#define SAFE_DELETE_ARRAY(pointArray) { if(pointArray){ delete [] pointArray; pointArray = nullptr; } }
+#define SAFE_RELEASE_D3DCONTENTS( pContents ) { if(pContents){ pContents->Release(); pContents = nullptr; } }
+
+struct SVertexType
+{
+	DirectX::XMFLOAT3 vPosition;
+	DirectX::XMFLOAT2 vTexture;
+	DirectX::XMFLOAT3 vNormal;
+};
+
+enum ETextureType
+{
+	ETEXTURE_DIFFUSE,
+	ETEXTURE_NORMAL,
+	ETEXTURE_SPECULAR,
+	ETEUXTER_MAX
+};
