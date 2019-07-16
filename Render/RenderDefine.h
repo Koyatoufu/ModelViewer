@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma comment(lib,"d3d11.lib")
+#pragma comment(lib,"dxgi.lib")
+
 #include <d3d11.h>
 #include <dxgi.h>
 #include <DirectXMath.h>
@@ -27,5 +30,15 @@ enum ETextureType
 	ETEXTURE_DIFFUSE,
 	ETEXTURE_NORMAL,
 	ETEXTURE_SPECULAR,
-	ETEUXTER_MAX
+	ETEXTURE_CUBEMAP,
+	ETEXTURE_ALPHAMAP,
+	ETEXTURE_REFLECTMAP,
+	ETEXTURE_MAX
+};
+
+enum EShaderType
+{
+	ESHADER_NORMAL,
+	ESHADER_TEST,
+	ESHADER_TOON
 };

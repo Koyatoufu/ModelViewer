@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Renderer.h"
 #include <stdlib.h>
 
@@ -15,6 +14,14 @@ CRenderer::CRenderer():
 	m_bVsyncEnabled(false),
 	m_nVideoCardMemory(0)
 {
+	if ( !ms_pInstance )
+	{
+		ms_pInstance = this;
+	}
+	else
+	{
+		this->~CRenderer();
+	}
 }
 
 CRenderer::~CRenderer()

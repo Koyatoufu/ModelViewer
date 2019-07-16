@@ -15,7 +15,8 @@ CWinAPI::CWinAPI() : m_hWnd(NULL),m_hInstance(NULL),m_bLoop(false)
 
 CWinAPI::~CWinAPI()
 {
-	SAFE_DELETE(m_pRenderer);
+	CRenderer::ReleaseInstnace();
+	m_pRenderer = nullptr;
 }
 
 HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
@@ -56,7 +57,7 @@ HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 	m_hWnd = hWnd;
 
-	m_pRenderer = new CRenderer();
+	m_pRenderer = CRenderer::CreateInstance();
 
 	if (FAILED(m_pRenderer->Initialize(m_hWnd)))
 		return E_FAIL;

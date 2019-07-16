@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="헤더 파일\Render">
       <UniqueIdentifier>{c0455ec6-43b1-45be-a8e2-681616352265}</UniqueIdentifier>
     </Filter>
@@ -21,6 +17,9 @@
     </Filter>
     <Filter Include="헤더 파일\Etc">
       <UniqueIdentifier>{10ab6b7b-4a40-4ad3-864a-558f4f62792d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Render\Animation">
+      <UniqueIdentifier>{e4eb544a-08dd-484e-9a0d-5ece642905e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,20 +32,11 @@
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
-    <ClInclude Include="RenderDefine.h">
-      <Filter>헤더 파일\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>헤더 파일\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일\Etc</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>헤더 파일\Etc</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>헤더 파일\Render</Filter>
@@ -54,15 +44,36 @@
     <ClInclude Include="BaseModel.h">
       <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
+    <ClInclude Include="ModelCollector.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>헤더 파일\Render\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationCollector.h">
+      <Filter>헤더 파일\Render\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDefine.h">
+      <Filter>헤더 파일\Etc</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleTon.h">
+      <Filter>헤더 파일\Etc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="BaseModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelCollector.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

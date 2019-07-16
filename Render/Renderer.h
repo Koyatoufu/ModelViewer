@@ -1,9 +1,11 @@
 #pragma once
 
 #include "RenderDefine.h"
+#include "SingleTon.h"
 
-class CRenderer
+class CRenderer:public CSingleTonT<CRenderer>
 {
+	friend CSingleTonT;
 private:
 	HWND m_hWnd;
 
@@ -23,14 +25,15 @@ private:
 	bool m_bVsyncEnabled;
 	int m_nVideoCardMemory;
 	char m_szVideoCardDescription[128];
+
 private:
 	CRenderer(CRenderer&) {};
 	void BeginScene();
 	void EndScene();
-public:
+protected:
 	CRenderer();
 	~CRenderer();
-
+public:
 	HRESULT Initialize(HWND hWnd);
 	void Render();
 

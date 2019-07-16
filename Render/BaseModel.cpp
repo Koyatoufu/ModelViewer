@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BaseModel.h"
 
 CBaseModel::CBaseModel():
