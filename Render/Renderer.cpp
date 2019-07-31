@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <stdlib.h>
+#include "ModelCollector.h"
 
 CRenderer::CRenderer():
 	m_hWnd(NULL),
@@ -281,6 +282,8 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 void CRenderer::Render()
 {
 	BeginScene();
+
+	
 	EndScene();
 }
 
