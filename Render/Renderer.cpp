@@ -279,11 +279,23 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 	return S_OK;
 }
 
+void CRenderer::Update()
+{
+	if (CModelCollector::Get())
+	{
+		CModelCollector::Get()->Update();
+	}
+}
+
 void CRenderer::Render()
 {
 	BeginScene();
-
 	
+	if (CModelCollector::Get())
+	{
+		CModelCollector::Get()->Render(m_pDeviceContext);
+	}
+
 	EndScene();
 }
 

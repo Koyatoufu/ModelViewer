@@ -35,6 +35,8 @@ protected:
 	~CRenderer();
 public:
 	HRESULT Initialize(HWND hWnd);
+
+	void Update();
 	void Render();
 
 	ID3D11Device* GetDevice() { return m_pDevice; };

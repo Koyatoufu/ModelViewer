@@ -7,4 +7,9 @@ protected:
 	CStaticModel();
 	virtual ~CStaticModel();
 public:
+
+	virtual HRESULT Initialize(ID3D11Device* pDevice, TCHAR* szFileName);
+
+	virtual void Update();
+	virtual void Render(ID3D11DeviceContext* pDeviceContext);
 };

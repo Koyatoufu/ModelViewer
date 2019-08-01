@@ -20,7 +20,8 @@ public:
 	virtual ~CBaseModel();
 
 	virtual HRESULT Initialize(ID3D11Device* pDevice, TCHAR* szFileName) = 0;
-	virtual HRESULT TextureLoad(ID3D11Device* pDevice, TCHAR* szTexture) = 0;
+
+	virtual void Update() = 0;
 	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
 
 	CMaterial* GetMaterial(int nIndex = 0);

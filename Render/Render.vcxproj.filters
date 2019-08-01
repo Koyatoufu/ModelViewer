@@ -76,5 +76,11 @@
     <ClCompile Include="ModelCollector.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="StaticModel.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
