@@ -59,6 +59,12 @@
     <ClInclude Include="SingleTon.h">
       <Filter>헤더 파일\Etc</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="TestModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -80,6 +86,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>헤더 파일\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="TestModel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

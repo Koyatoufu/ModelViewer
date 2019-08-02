@@ -9,6 +9,8 @@ private:
 	DirectX::XMFLOAT3 m_vecLook;
 
 	DirectX::XMMATRIX m_matView;
+private:
+	CCamera( const CCamera& ) {}
 public:
 	CCamera();
 	~CCamera();

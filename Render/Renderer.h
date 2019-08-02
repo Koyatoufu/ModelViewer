@@ -3,6 +3,9 @@
 #include "RenderDefine.h"
 #include "SingleTon.h"
 
+class CCamera;
+class CBaseModel;
+
 class CRenderer:public CSingleTonT<CRenderer>
 {
 	friend CSingleTonT;
@@ -26,6 +29,9 @@ private:
 	int m_nVideoCardMemory;
 	char m_szVideoCardDescription[128];
 
+	CCamera* m_pCamera;
+	CBaseModel* m_pTestModel;
+
 private:
 	CRenderer(CRenderer&) {};
 	void BeginScene();
@@ -41,4 +47,6 @@ public:
 
 	ID3D11Device* GetDevice() { return m_pDevice; };
 	ID3D11DeviceContext* GetDeviceContext() { return m_pDeviceContext; };
+
+	CCamera* GetRendererCamera() { return m_pCamera; }
 };

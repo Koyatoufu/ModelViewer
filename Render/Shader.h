@@ -12,8 +12,8 @@ private:
 
 	ID3D11SamplerState* m_pSampleState;
 
-	ID3D10Blob* m_pVertexShaderBuffer;
-	ID3D10Blob* m_pPixelShaderBuffer;
+	//ID3D10Blob* m_pVertexShaderBuffer;
+	//ID3D10Blob* m_pPixelShaderBuffer;
 
 	EShaderType m_eShaderType;
 public:
@@ -22,7 +22,7 @@ public:
 
 	HRESULT Initialize(std::wstring wstrFileName, EShaderType eShaderType = ESHADER_NORMAL );
 
-	HRESULT SetShaderParameter(DirectX::FXMMATRIX matWorld, DirectX::FXMMATRIX matView, DirectX::FXMMATRIX matProj, ID3D11ShaderResourceView* pTextureView);
-	void OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, WCHAR* wszFileName);
+	HRESULT SetShaderParameter(DirectX::XMMATRIX matWorld, DirectX::XMMATRIX matView, DirectX::XMMATRIX matProjection, ID3D11ShaderResourceView* pTextureView);
+	void OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, const WCHAR* wszFileName);
 	EShaderType GetShaderType() { return m_eShaderType; }
 };

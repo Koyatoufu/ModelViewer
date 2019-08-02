@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include <stdlib.h>
 #include "ModelCollector.h"
+#include "Camera.h"
+#include "TestModel.h"
 
 CRenderer::CRenderer():
 	m_hWnd(NULL),
@@ -13,7 +15,9 @@ CRenderer::CRenderer():
 	m_pDepthStencilView(NULL),
 	m_pRasterState(NULL),
 	m_bVsyncEnabled(false),
-	m_nVideoCardMemory(0)
+	m_nVideoCardMemory(0),
+	m_pCamera(NULL),
+	m_pTestModel(NULL)
 {
 	if ( !ms_pInstance )
 	{
@@ -29,6 +33,9 @@ CRenderer::~CRenderer()
 {
 	if (m_pSwapChain)
 		m_pSwapChain->SetFullscreenState(FALSE, nullptr);
+
+	SAFE_DELETE(m_pTestModel);
+	SAFE_DELETE(m_pCamera);
 
 	SAFE_RELEASE_D3DCONTENTS(m_pRasterState);
 	SAFE_RELEASE_D3DCONTENTS(m_pDepthStencilView);
@@ -276,11 +283,24 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 
 	m_matOrtho = DirectX::XMMatrixOrthographicLH((float)nScreenWidth, (float)nScreenHeight, fScreenNear, fScreenDepth);
 
+	m_pCamera = new CCamera();
+
+	//if (m_pCamera == nullptr)
+	//	return E_FAIL;
+
+	m_pCamera->SetPosition(0.0f, 0.0f, -10.0f);
+
+	m_pTestModel = new CTestModel;
+	if (FAILED(m_pTestModel->Initialize(m_pDevice, nullptr)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 void CRenderer::Update()
 {
+	m_pCamera->Update();
+
 	if (CModelCollector::Get())
 	{
 		CModelCollector::Get()->Update();
@@ -290,7 +310,14 @@ void CRenderer::Update()
 void CRenderer::Render()
 {
 	BeginScene();
-	
+
+	DirectX::XMMATRIX matView = m_pCamera->GetViewMatrix();
+
+	if (m_pTestModel)
+	{
+		m_pTestModel->Render(m_pDeviceContext);
+	}
+
 	if (CModelCollector::Get())
 	{
 		CModelCollector::Get()->Render(m_pDeviceContext);
