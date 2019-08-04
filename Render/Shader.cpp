@@ -1,5 +1,7 @@
 #include "Shader.h"
 #include "Renderer.h"
+#include <iostream>
+#include <fstream>
 
 enum EPolygonLayout
 {
@@ -176,5 +178,9 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 
 void CShader::OutputShaderErrorMessage(ID3D10Blob * pErrorMessage, const WCHAR * wszFileName)
 {
+	char* szErrorMessage = NULL;
+	unsigned long uBufferSize = 0;
+	std::ofstream fout;
+
 
 }
