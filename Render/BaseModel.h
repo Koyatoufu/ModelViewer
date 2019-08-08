@@ -15,11 +15,13 @@ protected:
 
 	std::string m_strFilePath;
 	std::string m_strName;
+
+	struct SModelData* m_pModelData;
 public:
 	CBaseModel();
 	virtual ~CBaseModel();
 
-	virtual HRESULT Initialize(ID3D11Device* pDevice, TCHAR* szFileName) = 0;
+	virtual HRESULT Initialize( ID3D11Device* pDevice, void * pModelData ) = 0;
 
 	virtual void Update() = 0;
 	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
@@ -27,4 +29,7 @@ public:
 	CMaterial* GetMaterial(int nIndex = 0);
 	std::string GetName() const;
 	std::string GetFilePath() const;
+protected:
+	virtual HRESULT InitBuffers(ID3D11Device* pDevice , void* pModelData);
+	virtual HRESULT InitMaterial(ID3D11Device * pDevice) { return S_OK; };
 };

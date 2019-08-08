@@ -8,7 +8,7 @@ CStaticModel::~CStaticModel()
 {
 }
 
-HRESULT CStaticModel::Initialize(ID3D11Device * pDevice, TCHAR * szFileName)
+HRESULT CStaticModel::Initialize(ID3D11Device * pDevice, void* pData)
 {
 	return S_OK;
 }

@@ -34,3 +34,23 @@ std::string CBaseModel::GetFilePath() const
 {
 	return m_strFilePath;
 }
+
+HRESULT CBaseModel::InitBuffers(ID3D11Device * pDevice, void* pData)
+{
+	if (pDevice == nullptr || pData == nullptr)
+		return E_FAIL;
+
+	SVertexType* parVerticies = NULL;
+	unsigned long* parIndices = 0;
+	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData, indexData;
+
+	//m_nVertexCount = nVertexCount;
+	//m_nIndexCount = nIndexCount;
+
+	parVerticies = new SVertexType[m_nVertexCount];
+	parIndices = new unsigned long[m_nIndexCount];
+
+
+	return E_NOTIMPL;
+}

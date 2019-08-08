@@ -23,7 +23,7 @@
 struct SVertexType
 {
 	DirectX::XMFLOAT3 vPosition;
-	DirectX::XMFLOAT2 vTexture;
+	DirectX::XMFLOAT2 vUV;
 	DirectX::XMFLOAT3 vNormal;
 };
 
