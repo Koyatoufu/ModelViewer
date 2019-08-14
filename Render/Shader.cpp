@@ -2,10 +2,12 @@
 #include "Renderer.h"
 #include <iostream>
 #include <fstream>
+#include "Material.h"
 
 enum EPolygonLayout
 {
 	EPOLYGONLAYOUT_POSITION = 0,
+	//EPOLYGONLAYOUT_COLOR,
 	EPOLYGONLAYOUT_TEXCOORD,
 	EPOLYGONLAYOUT_NORMAL,
 	EPOLYGONLAYOUT_MAX,
@@ -18,11 +20,19 @@ struct SMatrixBufferType
 	DirectX::XMMATRIX matProjection;
 };
 
+struct SLightBufferType
+{
+	DirectX::XMFLOAT4 diffuseColor;
+	DirectX::XMFLOAT3 vecLightDirection;
+	float fPadding;
+};
+
 CShader::CShader():
 	m_pVertexShader(nullptr),
 	m_pPixelShader(nullptr),
 	m_pLayout(nullptr),
 	m_pMatrixBuffer(nullptr),
+	m_pLightBuffer(nullptr),
 	m_pSampleState(nullptr),
 	m_eShaderType(ESHADER_NORMAL)
 
@@ -33,9 +43,17 @@ CShader::CShader():
 
 CShader::~CShader()
 {
+	SAFE_RELEASE_D3DCONTENTS(m_pLightBuffer);
+	SAFE_RELEASE_D3DCONTENTS(m_pMatrixBuffer);
+
+	SAFE_RELEASE_D3DCONTENTS(m_pSampleState);
+	SAFE_RELEASE_D3DCONTENTS(m_pLayout);
+
+	SAFE_RELEASE_D3DCONTENTS(m_pPixelShader);
+	SAFE_RELEASE_D3DCONTENTS(m_pVertexShader);
 }
 
-HRESULT CShader::Initialize(std::wstring wstrFileName, EShaderType eShaderType)
+HRESULT CShader::Initialize(std::basic_string<TCHAR> strName, EShaderType eShaderType)
 {
 	ID3D11Device* pDevice = CRenderer::Get()->GetDevice();
 
@@ -52,21 +70,37 @@ HRESULT CShader::Initialize(std::wstring wstrFileName, EShaderType eShaderType)
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 
-	if (FAILED(D3DCompileFromFile(wstrFileName.c_str(), NULL, NULL, "vs_main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pVertexShaderBuffer, &pErrorMessage)))
+	D3D11_BUFFER_DESC lightBufferDesc;
+
+	std::basic_string<TCHAR> strFileName;
+
+	strFileName = _T(".\\Shader\\") + strName + _T(".vs");
+
+	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "vs_main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pVertexShaderBuffer, &pErrorMessage)))
 	{
 		if (pErrorMessage)
 		{
-			OutputShaderErrorMessage(pErrorMessage, wstrFileName.c_str());
+			OutputShaderErrorMessage(pErrorMessage, strFileName.c_str());
+		}
+		else
+		{
+			MessageBox(NULL, strFileName.c_str(), _T("VertexShader NotFound"), MB_OK | MB_ICONERROR);
 		}
 
 		return E_FAIL;
-	}	
+	}
 
-	if (FAILED(D3DCompileFromFile(wstrFileName.c_str(), NULL, NULL, "ps_main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pPixelShaderBuffer, &pErrorMessage)))
+	strFileName = _T(".\\Shader\\") + strName + _T(".ps");
+
+	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ps_main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pPixelShaderBuffer, &pErrorMessage)))
 	{
 		if (pErrorMessage)
 		{
-			OutputShaderErrorMessage(pErrorMessage, wstrFileName.c_str());
+			OutputShaderErrorMessage(pErrorMessage, strFileName.c_str());
+		}
+		else
+		{
+			MessageBox(NULL, strFileName.c_str(), _T("PixelShader NotFound"), MB_OK | MB_ICONERROR);
 		}
 
 		return E_FAIL;
@@ -86,6 +120,14 @@ HRESULT CShader::Initialize(std::wstring wstrFileName, EShaderType eShaderType)
 	polygonLayout[EPOLYGONLAYOUT_POSITION].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[EPOLYGONLAYOUT_POSITION].InstanceDataStepRate = 0;
 
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticName = "COLOR";
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticIndex = 0;;
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlot = 0;
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	//polygonLayout[EPOLYGONLAYOUT_COLOR].InstanceDataStepRate = 0;
+	
 	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticName = "TEXCOORD";
 	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticIndex = 0;;
 	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -130,13 +172,24 @@ HRESULT CShader::Initialize(std::wstring wstrFileName, EShaderType eShaderType)
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0; matrixBufferDesc.StructureByteStride = 0;
 
-	if (pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer))
+	if (FAILED(pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer)))
+		return E_FAIL;
+
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(SLightBufferType);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	if (FAILED(pDevice->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATRIX matView, DirectX::XMMATRIX matProjection, ID3D11ShaderResourceView * pTextureView	)
+HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATRIX matView, DirectX::XMMATRIX matProjection, 
+	CMaterial* pMaterial, DirectX::XMFLOAT3 vecLightDirection, DirectX::XMFLOAT4 diffuseColor )
 {
 	ID3D11DeviceContext* pDeviceContext = CRenderer::Get()->GetDeviceContext();
 
@@ -144,7 +197,8 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 		return E_FAIL;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	SMatrixBufferType* pDataPtr;
+	SMatrixBufferType* pMatrixDataPtr;
+	SLightBufferType* pLightDataPtr;
 	unsigned int uBufferNumber = 0;
 
 	matWorld = DirectX::XMMatrixTranspose(matWorld);
@@ -154,11 +208,11 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 	if(FAILED(pDeviceContext->Map(m_pMatrixBuffer,0,D3D11_MAP_WRITE_DISCARD,0,&mappedResource)))
 		return E_FAIL;
 
-	pDataPtr = static_cast<SMatrixBufferType*>(mappedResource.pData);
+	pMatrixDataPtr = static_cast<SMatrixBufferType*>(mappedResource.pData);
 
-	pDataPtr->matWorld = matWorld;
-	pDataPtr->matView = matView;
-	pDataPtr->matProjection = matProjection;
+	pMatrixDataPtr->matWorld = matWorld;
+	pMatrixDataPtr->matView = matView;
+	pMatrixDataPtr->matProjection = matProjection;
 
 	pDeviceContext->Unmap(m_pMatrixBuffer, 0);
 
@@ -166,12 +220,32 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 
 	//------------------------------------------------------------------------
 
+	if (pMaterial == nullptr)
+		return S_OK;
+
+	CTexture* pTexture = pMaterial->GetTexture();
+
+	if (pTexture == nullptr)
+		return S_OK;
+
+	ID3D11ShaderResourceView * pTextureView = pTexture->GetTextureView();
+
 	pDeviceContext->PSSetShaderResources( 0, 1 , &pTextureView);
 
-	//if (FAILED(pDeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-	//	return E_FAIL;
+	if (FAILED(pDeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return E_FAIL;
 
-	//pDeviceContext->Unmap(m_pMatrixBuffer, 0);
+	pLightDataPtr = static_cast<SLightBufferType*>(mappedResource.pData);
+
+	//pLightDataPtr->diffuseColor = diffuseColor;
+	//pLightDataPtr->vecLightDirection = vecLightDirection;
+	pLightDataPtr->fPadding = 0.0f;
+
+	pDeviceContext->Unmap(m_pMatrixBuffer, 0);
+
+	uBufferNumber = 0;
+
+	pDeviceContext->PSSetConstantBuffers(uBufferNumber, 1, &m_pLightBuffer);
 
 	return S_OK;
 }
@@ -179,8 +253,34 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 void CShader::OutputShaderErrorMessage(ID3D10Blob * pErrorMessage, const WCHAR * wszFileName)
 {
 	char* szErrorMessage = NULL;
-	unsigned long uBufferSize = 0;
+	size_t unBufferSize = 0;
 	std::ofstream fout;
 
+	szErrorMessage = static_cast<char*>(pErrorMessage->GetBufferPointer());
 
+	unBufferSize = pErrorMessage->GetBufferSize();
+
+	fout.open("shader-error.txt");
+	for (size_t i = 0; i < unBufferSize; ++i)
+	{
+		fout << szErrorMessage[i];
+	}
+
+	fout.close();
+
+	SAFE_RELEASE_D3DCONTENTS(pErrorMessage);
+
+	MessageBox(NULL, _T("Error Compiling Shader"), _T("Error Compiling Shader"), MB_OK | MB_ICONERROR);
+}
+
+void CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount)
+{
+	pDeviceContext->IASetInputLayout(m_pLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	pDeviceContext->VSSetShader(m_pVertexShader, NULL, 0);
+	pDeviceContext->PSSetShader(m_pPixelShader, NULL, 0);
+
+	// Render the triangle.
+	pDeviceContext->DrawIndexed(nIndexCount, 0, 0);
 }

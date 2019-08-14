@@ -300,11 +300,13 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 void CRenderer::Update()
 {
 	m_pCamera->Update();
-
+	
 	if (CModelCollector::Get())
 	{
 		CModelCollector::Get()->Update();
 	}
+
+	m_pTestModel->Update();
 }
 
 void CRenderer::Render()
@@ -328,7 +330,7 @@ void CRenderer::Render()
 
 void CRenderer::BeginScene()
 {
-	float fArrColor[4] = { 0.0f,0.0f,1.0f,1.0f };
+	float fArrColor[4] = { 0.0f,0.0f,0.0f,1.0f };
 
 	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, fArrColor);
 

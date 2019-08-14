@@ -1,6 +1,8 @@
 #pragma once
 #include "RenderDefine.h"
-#include "Material.h"
+
+class CMaterial;
+class CShader;
 
 class CBaseModel
 {
@@ -17,6 +19,10 @@ protected:
 	std::string m_strName;
 
 	struct SModelData* m_pModelData;
+
+	CShader* m_pShader;
+
+	DirectX::XMFLOAT3 m_vecPosition;
 public:
 	CBaseModel();
 	virtual ~CBaseModel();
@@ -29,6 +35,13 @@ public:
 	CMaterial* GetMaterial(int nIndex = 0);
 	std::string GetName() const;
 	std::string GetFilePath() const;
+
+	CShader* GetShader() const { return m_pShader; }
+	void SetShader(CShader* pShader) { m_pShader = pShader; }
+
+	DirectX::XMFLOAT3 GetPosition() { return m_vecPosition; }
+	void SetPosition(float x, float y, float z);
+
 protected:
 	virtual HRESULT InitBuffers(ID3D11Device* pDevice , void* pModelData);
 	virtual HRESULT InitMaterial(ID3D11Device * pDevice) { return S_OK; };

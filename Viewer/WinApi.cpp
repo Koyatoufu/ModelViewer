@@ -85,7 +85,10 @@ void CWinAPI::Loop()
 		else
 		{
 			if (m_pRenderer)
+			{
+				m_pRenderer->Update();
 				m_pRenderer->Render();
+			}
 		}
 	}
 }

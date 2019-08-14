@@ -49,4 +49,9 @@ public:
 	ID3D11DeviceContext* GetDeviceContext() { return m_pDeviceContext; };
 
 	CCamera* GetRendererCamera() { return m_pCamera; }
+
+	DirectX::XMMATRIX GetWorld() { return m_matWorld; }
+	DirectX::XMMATRIX GetOrtho() { return m_matOrtho; }
+	DirectX::XMMATRIX GetProjection() { return m_matProjection; }
+
 };

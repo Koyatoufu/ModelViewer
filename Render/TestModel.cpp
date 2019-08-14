@@ -1,5 +1,8 @@
 #include "TestModel.h"
 #include "Material.h"
+#include "Renderer.h"
+#include "Camera.h"
+#include "Shader.h"
 
 CTestModel::CTestModel()
 {
@@ -15,16 +18,61 @@ HRESULT CTestModel::Initialize(ID3D11Device * pDevice, void * pModelData)
 
 	InitMaterial(pDevice);
 
+	m_pShader = new CShader();
+	if (FAILED(m_pShader->Initialize(_T("Test"))))
+	{
+		;
+	}
+
+	SetPosition(0.0f, 0.0f, 0.0f);
+
 	return S_OK;
 }
 
 void CTestModel::Update()
 {
+	CRenderer* pRenderer = CRenderer::Get();
+
+	if (pRenderer)
+	{
+		CCamera* pCamera = pRenderer->GetRendererCamera();
+
+		pCamera->SetLookPosition(GetPosition());
+
+		if (m_pShader)
+		{
+			DirectX::XMMATRIX matWorld = pRenderer->GetWorld();
+			DirectX::XMMATRIX matProj = pRenderer->GetProjection();
+
+			DirectX::XMMATRIX matView = pCamera->GetViewMatrix();
+
+			m_pShader->SetShaderParameter(matWorld, matView, matProj);
+		}
+
+	}
 }
 
 void CTestModel::Render(ID3D11DeviceContext * pDeviceContext)
 {
-	
+	unsigned int unStride;
+	unsigned int unOffset;
+
+	// Set vertex buffer stride and offset.
+	unStride = sizeof(SVertexType);
+	unOffset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &unStride, &unOffset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	if (m_pShader)
+		m_pShader->Render(pDeviceContext, m_nIndexCount);
+
 }
 
 HRESULT CTestModel::InitBuffers(ID3D11Device * pDevice, void* pModelData)
@@ -104,7 +152,12 @@ HRESULT CTestModel::InitBuffers(ID3D11Device * pDevice, void* pModelData)
 HRESULT CTestModel::InitMaterial(ID3D11Device * pDevice)
 {
 	CMaterial* pMaterial = new CMaterial();
-	//pMaterial->InitOnlyDiffuseTexture();
+
+	DirectX::XMFLOAT4 diffuse = DirectX::XMFLOAT4(1.0f,0.0f,0.0f,1.0f);
+	DirectX::XMFLOAT4 ambient = DirectX::XMFLOAT4(1.0f,1.0f,1.0f,1.0f);
+	DirectX::XMFLOAT4 specular = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	pMaterial->Initialize(diffuse, ambient, specular);
 
 	m_vecMaterial.push_back(pMaterial);
 

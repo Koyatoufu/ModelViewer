@@ -6,17 +6,27 @@ class CMaterial
 private:
 	CTexture* m_pArrTexture[ETextureType::ETEXTURE_MAX]; // ETextureType ¹è¿­
 
-	DirectX::XMFLOAT3 m_vecDiffuseColor;
+	DirectX::XMFLOAT4 m_diffuseColor;
+	DirectX::XMFLOAT4 m_ambientColor;
+	DirectX::XMFLOAT4 m_specularColor;
+
 public:
 	CMaterial();
 	~CMaterial();
 
-	HRESULT InitOnlyDiffuseTexture(ID3D11Device* pDevice, HWND hWnd , std::string strTexFileName );
+	HRESULT Initialize(DirectX::XMFLOAT4 diffuseColor, DirectX::XMFLOAT4 ambientColor, DirectX::XMFLOAT4 specularColor );
 
-	HRESULT AddTexture(std::string strTexFileName, ETextureType eTextureType);
+	HRESULT AddTexture(ID3D11Device* pDevice, HWND hWnd, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType = ETEXTURE_DIFFUSE);
 
-	CTexture* GetTexture(ETextureType eTextureType) { return m_pArrTexture[eTextureType]; }
+	CTexture* GetTexture(ETextureType eTextureType = ETEXTURE_DIFFUSE) { return m_pArrTexture[eTextureType]; }
 
-	DirectX::XMFLOAT3 GetDiffuseColor() { return m_vecDiffuseColor; }
-	void SetDiffuseColor(float r, float g, float b) { m_vecDiffuseColor.x = r; m_vecDiffuseColor.y = g; m_vecDiffuseColor.z = b; }
+	DirectX::XMFLOAT4 GetDiffuseColor() { return m_diffuseColor; }
+	void SetDiffuseColor(float r, float g, float b, float a = 1.f);
+
+	DirectX::XMFLOAT4 GetAmbientColor() { return m_ambientColor; }
+	void SetAmbientColor(float r, float g, float b, float a = 1.f);
+
+	DirectX::XMFLOAT4 GetSpecularColor() { return m_specularColor; }
+	void SetSpecularColor(float r, float g, float b, float a = 1.f);
+
 };
