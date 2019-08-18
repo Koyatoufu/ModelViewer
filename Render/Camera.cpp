@@ -3,6 +3,18 @@
 CCamera::CCamera()
 {
 	m_matView = DirectX::XMMatrixIdentity();
+
+	m_vecPosition.x = 0.f;
+	m_vecPosition.y = 0.f;
+	m_vecPosition.z = -10.f;
+
+	m_vecLook.x = 0.f;
+	m_vecLook.y = 0.f;
+	m_vecLook.z = 1.f;
+
+	m_vecRotation.x = 0.f;
+	m_vecRotation.y = 0.f;
+	m_vecRotation.z = 0.f;
 }
 
 CCamera::~CCamera()
@@ -40,6 +52,10 @@ void CCamera::Update()
 	DirectX::XMVECTOR vecPos = DirectX::XMLoadFloat3(&m_vecPosition);
 
 	DirectX::XMMATRIX matRotation;
+
+	fYaw = m_vecRotation.x * 0.0174532925f;
+	fPitch = m_vecRotation.y * 0.0174532925f;
+	fRoll = m_vecRotation.z * 0.0174532925f;
 
 	matRotation = DirectX::XMMatrixRotationRollPitchYaw(fPitch,fYaw,fRoll);
 

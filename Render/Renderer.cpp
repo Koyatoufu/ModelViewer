@@ -167,7 +167,8 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
-	if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &m_pSwapChain, &m_pDevice, NULL, &m_pDeviceContext)))
+	if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
+		D3D11_SDK_VERSION, &swapChainDesc, &m_pSwapChain, &m_pDevice, NULL, &m_pDeviceContext)))
 		return E_FAIL;
 
 	if (!m_pSwapChain || !m_pDevice || !m_pDeviceContext)
@@ -299,14 +300,14 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 
 void CRenderer::Update()
 {
-	m_pCamera->Update();
-	
 	if (CModelCollector::Get())
 	{
 		CModelCollector::Get()->Update();
 	}
 
 	m_pTestModel->Update();
+
+	m_pCamera->Update();
 }
 
 void CRenderer::Render()

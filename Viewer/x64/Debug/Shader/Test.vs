@@ -10,14 +10,14 @@ struct VertexInputType
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
-	float2 uv : TEXCOORD0;
+	//float2 uv : TEXCOORD0;
 };
 
 struct VertexOutType
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
-	float2 uv : TEXCOORD0;
+	//float2 uv : TEXCOORD0;
 };
 
 VertexOutType vs_main( VertexInputType input )
@@ -31,7 +31,7 @@ VertexOutType vs_main( VertexInputType input )
 	output.position = mul(input.position, matProjection);
 	
 	output.color = input.color;
-	output.uv = input.uv;
+	//output.uv = input.uv;
 
 	return output;
 }

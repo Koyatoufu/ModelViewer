@@ -27,8 +27,9 @@
 struct SVertexType
 {
 	DirectX::XMFLOAT3 vPosition;
-	DirectX::XMFLOAT2 vUV;
-	DirectX::XMFLOAT3 vNormal;
+	DirectX::XMFLOAT4 vColor;
+	//DirectX::XMFLOAT2 vUV;
+	//DirectX::XMFLOAT3 vNormal;
 };
 
 enum ETextureType

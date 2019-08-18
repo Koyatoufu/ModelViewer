@@ -7,9 +7,9 @@
 enum EPolygonLayout
 {
 	EPOLYGONLAYOUT_POSITION = 0,
-	//EPOLYGONLAYOUT_COLOR,
-	EPOLYGONLAYOUT_TEXCOORD,
-	EPOLYGONLAYOUT_NORMAL,
+	EPOLYGONLAYOUT_COLOR,
+	//EPOLYGONLAYOUT_TEXCOORD,
+	//EPOLYGONLAYOUT_NORMAL,
 	EPOLYGONLAYOUT_MAX,
 };
 
@@ -70,11 +70,11 @@ HRESULT CShader::Initialize(std::basic_string<TCHAR> strName, EShaderType eShade
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 
-	D3D11_BUFFER_DESC lightBufferDesc;
+	//D3D11_BUFFER_DESC lightBufferDesc;
 
 	std::basic_string<TCHAR> strFileName;
 
-	strFileName = _T(".\\Shader\\") + strName + _T(".vs");
+	strFileName = _T("Shader\\") + strName + _T(".vs");
 
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "vs_main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pVertexShaderBuffer, &pErrorMessage)))
 	{
@@ -90,7 +90,7 @@ HRESULT CShader::Initialize(std::basic_string<TCHAR> strName, EShaderType eShade
 		return E_FAIL;
 	}
 
-	strFileName = _T(".\\Shader\\") + strName + _T(".ps");
+	strFileName = _T("Shader\\") + strName + _T(".ps");
 
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ps_main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pPixelShaderBuffer, &pErrorMessage)))
 	{
@@ -120,29 +120,29 @@ HRESULT CShader::Initialize(std::basic_string<TCHAR> strName, EShaderType eShade
 	polygonLayout[EPOLYGONLAYOUT_POSITION].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[EPOLYGONLAYOUT_POSITION].InstanceDataStepRate = 0;
 
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticName = "COLOR";
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticIndex = 0;;
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlot = 0;
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	//polygonLayout[EPOLYGONLAYOUT_COLOR].InstanceDataStepRate = 0;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticName = "COLOR";
+	polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticIndex = 0;;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlot = 0;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[EPOLYGONLAYOUT_COLOR].InstanceDataStepRate = 0;
 	
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticName = "TEXCOORD";
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticIndex = 0;;
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InputSlot = 0;
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InstanceDataStepRate = 0;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticName = "TEXCOORD";
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].SemanticIndex = 0;;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InputSlot = 0;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	//polygonLayout[EPOLYGONLAYOUT_TEXCOORD].InstanceDataStepRate = 0;
 
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].SemanticName = "NORMAL";
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].SemanticIndex = 0;;
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].InputSlot = 0;
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[EPOLYGONLAYOUT_NORMAL].InstanceDataStepRate = 0;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].SemanticName = "NORMAL";
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].SemanticIndex = 0;;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].InputSlot = 0;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	//polygonLayout[EPOLYGONLAYOUT_NORMAL].InstanceDataStepRate = 0;
 
 	uNumElements = ( sizeof(D3D11_INPUT_ELEMENT_DESC) * EPOLYGONLAYOUT_MAX )/ sizeof(D3D11_INPUT_ELEMENT_DESC);
 
@@ -175,15 +175,15 @@ HRESULT CShader::Initialize(std::basic_string<TCHAR> strName, EShaderType eShade
 	if (FAILED(pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer)))
 		return E_FAIL;
 
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(SLightBufferType);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
+	//lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	//lightBufferDesc.ByteWidth = sizeof(SLightBufferType);
+	//lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//lightBufferDesc.MiscFlags = 0;
+	//lightBufferDesc.StructureByteStride = 0;
 
-	if (FAILED(pDevice->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer)))
-		return E_FAIL;
+	//if (FAILED(pDevice->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -198,7 +198,7 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	SMatrixBufferType* pMatrixDataPtr;
-	SLightBufferType* pLightDataPtr;
+	//SLightBufferType* pLightDataPtr;
 	unsigned int uBufferNumber = 0;
 
 	matWorld = DirectX::XMMatrixTranspose(matWorld);
@@ -220,32 +220,32 @@ HRESULT CShader::SetShaderParameter( DirectX::XMMATRIX matWorld, DirectX::XMMATR
 
 	//------------------------------------------------------------------------
 
-	if (pMaterial == nullptr)
-		return S_OK;
+	//if (pMaterial == nullptr)
+	//	return S_OK;
 
-	CTexture* pTexture = pMaterial->GetTexture();
+	//CTexture* pTexture = pMaterial->GetTexture();
 
-	if (pTexture == nullptr)
-		return S_OK;
+	//if (pTexture == nullptr)
+	//	return S_OK;
 
-	ID3D11ShaderResourceView * pTextureView = pTexture->GetTextureView();
+	//ID3D11ShaderResourceView * pTextureView = pTexture->GetTextureView();
 
-	pDeviceContext->PSSetShaderResources( 0, 1 , &pTextureView);
+	//pDeviceContext->PSSetShaderResources( 0, 1 , &pTextureView);
 
-	if (FAILED(pDeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-		return E_FAIL;
+	//if (FAILED(pDeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	//	return E_FAIL;
 
-	pLightDataPtr = static_cast<SLightBufferType*>(mappedResource.pData);
+	//pLightDataPtr = static_cast<SLightBufferType*>(mappedResource.pData);
 
-	//pLightDataPtr->diffuseColor = diffuseColor;
-	//pLightDataPtr->vecLightDirection = vecLightDirection;
-	pLightDataPtr->fPadding = 0.0f;
+	////pLightDataPtr->diffuseColor = diffuseColor;
+	////pLightDataPtr->vecLightDirection = vecLightDirection;
+	//pLightDataPtr->fPadding = 0.0f;
 
-	pDeviceContext->Unmap(m_pMatrixBuffer, 0);
+	//pDeviceContext->Unmap(m_pMatrixBuffer, 0);
 
-	uBufferNumber = 0;
+	//uBufferNumber = 0;
 
-	pDeviceContext->PSSetConstantBuffers(uBufferNumber, 1, &m_pLightBuffer);
+	//pDeviceContext->PSSetConstantBuffers(uBufferNumber, 1, &m_pLightBuffer);
 
 	return S_OK;
 }

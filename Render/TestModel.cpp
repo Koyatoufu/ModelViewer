@@ -37,7 +37,7 @@ void CTestModel::Update()
 	{
 		CCamera* pCamera = pRenderer->GetRendererCamera();
 
-		pCamera->SetLookPosition(GetPosition());
+		//pCamera->SetLookPosition(GetPosition());
 
 		if (m_pShader)
 		{
@@ -46,7 +46,7 @@ void CTestModel::Update()
 
 			DirectX::XMMATRIX matView = pCamera->GetViewMatrix();
 
-			m_pShader->SetShaderParameter(matWorld, matView, matProj);
+			m_pShader->SetShaderParameter(matWorld, matView, matProj,m_vecMaterial[0]);
 		}
 
 	}
@@ -90,22 +90,26 @@ HRESULT CTestModel::InitBuffers(ID3D11Device * pDevice, void* pModelData)
 
 	// Load the vertex array with data. 
 	parVerticies[0].vPosition = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f); // Bottom left. 
-	parVerticies[0].vUV = DirectX::XMFLOAT2(0.0f, 1.0f);
-	parVerticies[0].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	parVerticies[0].vColor = DirectX::XMFLOAT4(0.0f,1.0f,0.0f,1.0f); 
+	//parVerticies[0].vUV = DirectX::XMFLOAT2(0.0f, 1.0f);
+	//parVerticies[0].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
 	
 	parVerticies[1].vPosition = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f); // Top middle. 
-	parVerticies[1].vUV = DirectX::XMFLOAT2(0.5f, 0.0f);
-	parVerticies[1].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	parVerticies[1].vColor = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	//parVerticies[1].vUV = DirectX::XMFLOAT2(0.5f, 0.0f);
+	//parVerticies[1].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
 	
 	parVerticies[2].vPosition = DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f); // Bottom right.
-	parVerticies[2].vUV = DirectX::XMFLOAT2(1.0f, 1.0f);
-	parVerticies[2].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	parVerticies[2].vColor = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	//parVerticies[2].vUV = DirectX::XMFLOAT2(1.0f, 1.0f);
+	//parVerticies[2].vNormal = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	// Set up the description of the static vertex buffer. 
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT; 
 	vertexBufferDesc.ByteWidth = sizeof(SVertexType) * m_nVertexCount; 
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; 
-	vertexBufferDesc.CPUAccessFlags = 0; vertexBufferDesc.MiscFlags = 0; 
+	vertexBufferDesc.CPUAccessFlags = 0; 
+	vertexBufferDesc.MiscFlags = 0; 
 	vertexBufferDesc.StructureByteStride = 0; 
 	
 	// Give the subresource structure a pointer to the vertex data.
