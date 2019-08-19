@@ -20,7 +20,7 @@ private:
 
 	CCamera* m_pCamera;
 	CColorModel* m_pTestModel;
-	CColorShader* m_pShader;
+	CColorShader* m_pTestShader;
 	CD3DClass* m_pD3D;
 
 private:

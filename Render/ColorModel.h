@@ -1,39 +1,28 @@
 #pragma once
-//////////////
-// INCLUDES
-#include "RenderDefine.h"
-using namespace DirectX;
+#include "BaseModel.h"
 
-
-////////////////////////////////////////////////////////////////////////////////
-// Class name: ModelClass
-////////////////////////////////////////////////////////////////////////////////
-class CColorModel
+class CColorModel:public CBaseModel
 {
 private:
 	struct  ColorVertexType
 	{
-		XMFLOAT3 position;
-		XMFLOAT4 color;
+		DirectX::XMFLOAT3 position;
+		DirectX::XMFLOAT4 color;
 	};
 
 public:
 	CColorModel();
-	CColorModel(const CColorModel&);
-	~CColorModel();
+	virtual ~CColorModel();
 
-	bool Initialize(ID3D11Device*);
-	void Shutdown();
-	void Render(ID3D11DeviceContext*);
+	virtual HRESULT Initialize(ID3D11Device* pDevice, ModelData * pModelData);
+	virtual void Render(ID3D11DeviceContext* pDeviceContext);
 
-	int GetIndexCount();
+	virtual void Update();
 
 private:
-	bool InitializeBuffers(ID3D11Device*);
-	void ShutdownBuffers();
+	CColorModel(const CColorModel&) {};
 	void RenderBuffers(ID3D11DeviceContext*);
-
-private:
-	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
-	int m_vertexCount, m_indexCount;
+protected:
+	virtual HRESULT InitBuffers(ID3D11Device* pDevice, void* pModelData);
+	virtual HRESULT InitMaterial(ID3D11Device * pDevice);
 };

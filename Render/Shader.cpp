@@ -72,7 +72,18 @@ void CShader::OutputShaderErrorMessage(ID3D10Blob * pErrorMessage, const WCHAR *
 	MessageBox(NULL, _T("Error Compiling Shader"), _T("Error Compiling Shader"), MB_OK | MB_ICONERROR);
 }
 
-void CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount)
+HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, MatrixBufferType& matrixBuffer, CMaterial* pMaterial)
+{
+	if (FAILED(SetShaderParameters(pDeviceContext, matrixBuffer, pMaterial)))
+		return E_FAIL;
+
+	//Now render the prepared buffers with the shader.
+	RenderShader(pDeviceContext, nIndexCount);
+
+	return S_OK;
+}
+
+void CShader::RenderShader(ID3D11DeviceContext* pDeviceContext, int nIndexCount)
 {
 	pDeviceContext->IASetInputLayout(m_pLayout);
 
@@ -83,120 +94,3 @@ void CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount)
 	// Render the triangle.
 	pDeviceContext->DrawIndexed(nIndexCount, 0, 0);
 }
-
-//HRESULT CShader::Initialize(ID3D11Device* pDevice, std::basic_string<TCHAR> strName)
-//{
-//	if (pDevice == nullptr)
-//		return E_FAIL;
-//
-//	ID3D10Blob* pVertexShaderBuffer;
-//	ID3D10Blob* pPixelShaderBuffer;
-//
-//	ID3D10Blob* pErrorMessage = nullptr;
-//
-//	D3D11_INPUT_ELEMENT_DESC polygonLayout[EPOLYGONLAYOUT_MAX];
-//	unsigned int uNumElements = 0;
-//	D3D11_SAMPLER_DESC samplerDesc;
-//	D3D11_BUFFER_DESC matrixBufferDesc;
-//
-//	//D3D11_BUFFER_DESC lightBufferDesc;
-//
-//	std::basic_string<TCHAR> strFileName;
-//
-//	strFileName = _T("Shader\\") + strName + _T(".vs");
-//
-//	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "vs_main", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pVertexShaderBuffer, &pErrorMessage)))
-//	{
-//		if (pErrorMessage)
-//		{
-//			OutputShaderErrorMessage(pErrorMessage, strFileName.c_str());
-//		}
-//		else
-//		{
-//			MessageBox(NULL, strFileName.c_str(), _T("VertexShader NotFound"), MB_OK | MB_ICONERROR);
-//		}
-//
-//		return E_FAIL;
-//	}
-//
-//	strFileName = _T("Shader\\") + strName + _T(".ps");
-//
-//	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ps_main", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pPixelShaderBuffer, &pErrorMessage)))
-//	{
-//		if (pErrorMessage)
-//		{
-//			OutputShaderErrorMessage(pErrorMessage, strFileName.c_str());
-//		}
-//		else
-//		{
-//			MessageBox(NULL, strFileName.c_str(), _T("PixelShader NotFound"), MB_OK | MB_ICONERROR);
-//		}
-//
-//		return E_FAIL;
-//	}
-//
-//	if (FAILED(pDevice->CreateVertexShader(pVertexShaderBuffer->GetBufferPointer(), pVertexShaderBuffer->GetBufferSize(), NULL, &m_pVertexShader)))
-//		return E_FAIL;
-//
-//	if (FAILED(pDevice->CreatePixelShader(pPixelShaderBuffer->GetBufferPointer(), pPixelShaderBuffer->GetBufferSize(), NULL, &m_pPixelShader)))
-//		return E_FAIL;
-//
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].SemanticName = "POSITION";
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].SemanticIndex = 0;;
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].InputSlot = 0;
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].AlignedByteOffset = 0;
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-//	polygonLayout[EPOLYGONLAYOUT_POSITION].InstanceDataStepRate = 0;
-//
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticName = "COLOR";
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].SemanticIndex = 0;;
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlot = 0;
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-//	polygonLayout[EPOLYGONLAYOUT_COLOR].InstanceDataStepRate = 0;
-//
-//	uNumElements = (sizeof(D3D11_INPUT_ELEMENT_DESC) * EPOLYGONLAYOUT_MAX) / sizeof(D3D11_INPUT_ELEMENT_DESC);
-//
-//	SAFE_RELEASE_D3DCONTENTS(pVertexShaderBuffer);
-//	SAFE_RELEASE_D3DCONTENTS(pPixelShaderBuffer);
-//
-//	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-//	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-//	samplerDesc.MipLODBias = 0.0f;
-//	samplerDesc.MaxAnisotropy = 1;
-//	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-//	samplerDesc.BorderColor[0] = 0;
-//	samplerDesc.BorderColor[1] = 0;
-//	samplerDesc.BorderColor[2] = 0;
-//	samplerDesc.BorderColor[3] = 0;
-//	samplerDesc.MinLOD = 0;
-//	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-//
-//	if (FAILED(pDevice->CreateSamplerState(&samplerDesc, &m_pSampleState)))
-//		return E_FAIL;
-//
-//	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-//	matrixBufferDesc.ByteWidth = sizeof(SMatrixBufferType);
-//	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-//	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-//	matrixBufferDesc.MiscFlags = 0; matrixBufferDesc.StructureByteStride = 0;
-//
-//	if (FAILED(pDevice->CreateBuffer(&matrixBufferDesc, NULL, &m_pMatrixBuffer)))
-//		return E_FAIL;
-//
-//	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-//	lightBufferDesc.ByteWidth = sizeof(SLightBufferType);
-//	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-//	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-//	lightBufferDesc.MiscFlags = 0;
-//	lightBufferDesc.StructureByteStride = 0;
-//
-//	if (FAILED(pDevice->CreateBuffer(&lightBufferDesc, NULL, &m_pLightBuffer)))
-//		return E_FAIL;
-//
-//	return S_OK;
-//}

@@ -26,7 +26,7 @@ CRenderer::CRenderer():
 CRenderer::~CRenderer()
 {
 	SAFE_DELETE(m_pD3D);
-	SAFE_DELETE(m_pShader);
+	SAFE_DELETE(m_pTestShader);
 	SAFE_DELETE(m_pTestModel);
 	SAFE_DELETE(m_pCamera);
 }
@@ -45,16 +45,15 @@ HRESULT CRenderer::Initialize(HWND hWnd)
 
 	m_pCamera = new CCamera();
 	m_pCamera->SetPosition(0.f, 0.f, -10.f);
-	m_pCamera->SetRotation(0.f, 0.f, 0.f);
 
 	m_pTestModel = new CColorModel();
-	if (FAILED(m_pTestModel->Initialize(pDevice)))
+	if (FAILED(m_pTestModel->Initialize(pDevice,nullptr)))
 	{
 		return E_FAIL;
 	}
 
-	m_pShader = new CColorShader();
-	if (FAILED(m_pShader->Initialize(pDevice,m_hWnd)))
+	m_pTestShader = new CColorShader();
+	if (FAILED(m_pTestShader->Initialize(pDevice)))
 	{
 		return E_FAIL;
 	}
@@ -75,16 +74,16 @@ void CRenderer::Render()
 
 	m_pCamera->Render();
 	
-	DirectX::XMMATRIX matWorld, matView, matProjection;
+	MatrixBufferType matrixBuffer;
 	ID3D11DeviceContext* pDeviceContext = m_pD3D->GetDeviceContext();
 
-	m_pD3D->GetWorldMatrix(matWorld);
-	m_pCamera->GetViewMatrix(matView);
-	m_pD3D->GetProjectionMatrix(matProjection);
+	m_pD3D->GetWorldMatrix(matrixBuffer.world);
+	m_pCamera->GetViewMatrix(matrixBuffer.view);
+	m_pD3D->GetProjectionMatrix(matrixBuffer.projection);
 	
 	m_pTestModel->Render(pDeviceContext);
 
-	m_pShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(), matWorld, matView, matProjection);
+	m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(), matrixBuffer);
 	
 	m_pD3D->EndScene();
 }

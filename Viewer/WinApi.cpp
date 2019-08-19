@@ -45,7 +45,7 @@ HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
 	m_hInstance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
 	HWND hWnd = CreateWindowW(g_szWindowClass, g_szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, 1280, 720, nullptr, nullptr, hInstance, nullptr);
+		CW_USEDEFAULT, 0, 1600, 900, nullptr, nullptr, hInstance, nullptr);
 		
 	if (!hWnd)
 	{

@@ -173,6 +173,8 @@
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="StaticModel.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureModel.h" />
+    <ClInclude Include="TextureShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseModel.cpp" />

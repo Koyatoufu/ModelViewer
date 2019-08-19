@@ -77,6 +77,12 @@
     <ClInclude Include="ColorModel.h">
       <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
+    <ClInclude Include="TextureModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShader.h">
+      <Filter>헤더 파일\Render\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">

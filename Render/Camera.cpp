@@ -56,11 +56,8 @@ DirectX::XMFLOAT3 CCamera::GetRotation()
 void CCamera::Render()
 {
 	// Setup the vector that points upwards.
-	DirectX::XMFLOAT3 up;
-	up.x = 0.0f;
-	up.y = 1.0f;
-	up.z = 0.0f;
-
+	DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.0f,1.0f,0.0f);
+	
 	// Load it into a XMVECTOR structure.
 	DirectX::XMVECTOR upVector = XMLoadFloat3(&up);
 
@@ -71,10 +68,7 @@ void CCamera::Render()
 	DirectX::XMVECTOR positionVector = XMLoadFloat3(&position);
 
 	// Setup where the camera is looking by default.
-	DirectX::XMFLOAT3 lookAt;
-	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
-	lookAt.z = 1.0f;
+	DirectX::XMFLOAT3 lookAt = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
 
 	// Load it into a XMVECTOR structure.
 	DirectX::XMVECTOR lookAtVector = XMLoadFloat3(&lookAt);
@@ -92,7 +86,7 @@ void CCamera::Render()
 	upVector = XMVector3TransformCoord(upVector, rotationMatrix);
 
 	// Translate the rotated camera position to the location of the viewer.
-	lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
+	//lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
 
 	// Finally create the view matrix from the three updated vectors.
 	m_viewMatrix = DirectX::XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
