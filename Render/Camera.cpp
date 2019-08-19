@@ -1,66 +1,105 @@
 #include "Camera.h"
 
+
 CCamera::CCamera()
 {
-	m_matView = DirectX::XMMatrixIdentity();
+	m_position.x = 0.0f;
+	m_position.y = 0.0f;
+	m_position.z = 0.0f;
 
-	m_vecPosition.x = 0.f;
-	m_vecPosition.y = 0.f;
-	m_vecPosition.z = -10.f;
-
-	m_vecLook.x = 0.f;
-	m_vecLook.y = 0.f;
-	m_vecLook.z = 1.f;
-
-	m_vecRotation.x = 0.f;
-	m_vecRotation.y = 0.f;
-	m_vecRotation.z = 0.f;
+	m_rotation.x = 0.0f;
+	m_rotation.y = 0.0f;
+	m_rotation.z = 0.0f;
 }
+
+
+CCamera::CCamera(const CCamera& other)
+{
+}
+
 
 CCamera::~CCamera()
 {
 }
 
+
 void CCamera::SetPosition(float x, float y, float z)
 {
-	m_vecPosition.x = x;
-	m_vecPosition.y = y;
-	m_vecPosition.z = z;
+	m_position.x = x;
+	m_position.y = y;
+	m_position.z = z;
+	return;
 }
+
 
 void CCamera::SetRotation(float x, float y, float z)
 {
-	m_vecRotation.x = x;
-	m_vecRotation.y = y;
-	m_vecRotation.z = z;
+	m_rotation.x = x;
+	m_rotation.y = y;
+	m_rotation.z = z;
+	return;
 }
 
-void CCamera::SetLookPosition(float x, float y, float z)
+
+DirectX::XMFLOAT3 CCamera::GetPosition()
 {
-	m_vecLook.x = x;
-	m_vecLook.y = y;
-	m_vecLook.z = z;
+	return m_position;
 }
 
-void CCamera::Update()
+
+DirectX::XMFLOAT3 CCamera::GetRotation()
 {
-	float fYaw = 0.0f, fPitch = 0.0f, fRoll = 0.0f;
+	return m_rotation;
+}
 
-	DirectX::XMFLOAT3 f3Up = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-	DirectX::XMVECTOR vecUp = DirectX::XMLoadFloat3(&f3Up);
-	DirectX::XMVECTOR vecLook = DirectX::XMLoadFloat3(&m_vecLook);
-	DirectX::XMVECTOR vecPos = DirectX::XMLoadFloat3(&m_vecPosition);
 
-	DirectX::XMMATRIX matRotation;
+void CCamera::Render()
+{
+	// Setup the vector that points upwards.
+	DirectX::XMFLOAT3 up;
+	up.x = 0.0f;
+	up.y = 1.0f;
+	up.z = 0.0f;
 
-	fYaw = m_vecRotation.x * 0.0174532925f;
-	fPitch = m_vecRotation.y * 0.0174532925f;
-	fRoll = m_vecRotation.z * 0.0174532925f;
+	// Load it into a XMVECTOR structure.
+	DirectX::XMVECTOR upVector = XMLoadFloat3(&up);
 
-	matRotation = DirectX::XMMatrixRotationRollPitchYaw(fPitch,fYaw,fRoll);
+	// Setup the position of the camera in the world.
+	DirectX::XMFLOAT3 position = m_position;
 
-	vecLook = DirectX::XMVector3TransformCoord(vecLook,matRotation);
-	vecUp = DirectX::XMVector3TransformCoord(vecUp,matRotation);
+	// Load it into a XMVECTOR structure.
+	DirectX::XMVECTOR positionVector = XMLoadFloat3(&position);
 
-	m_matView = DirectX::XMMatrixLookAtLH(vecPos, vecLook, vecUp);
+	// Setup where the camera is looking by default.
+	DirectX::XMFLOAT3 lookAt;
+	lookAt.x = 0.0f;
+	lookAt.y = 0.0f;
+	lookAt.z = 1.0f;
+
+	// Load it into a XMVECTOR structure.
+	DirectX::XMVECTOR lookAtVector = XMLoadFloat3(&lookAt);
+
+	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
+	float pitch = m_rotation.x * 0.0174532925f;
+	float yaw = m_rotation.y * 0.0174532925f;
+	float roll = m_rotation.z * 0.0174532925f;
+
+	// Create the rotation matrix from the yaw, pitch, and roll values.
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+
+	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
+	lookAtVector = XMVector3TransformCoord(lookAtVector, rotationMatrix);
+	upVector = XMVector3TransformCoord(upVector, rotationMatrix);
+
+	// Translate the rotated camera position to the location of the viewer.
+	lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
+
+	// Finally create the view matrix from the three updated vectors.
+	m_viewMatrix = DirectX::XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
+}
+
+
+void CCamera::GetViewMatrix(DirectX::XMMATRIX& viewMatrix)
+{
+	viewMatrix = m_viewMatrix;
 }

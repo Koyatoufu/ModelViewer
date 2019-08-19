@@ -12,40 +12,34 @@
     <Filter Include="헤더 파일\Render">
       <UniqueIdentifier>{c0455ec6-43b1-45be-a8e2-681616352265}</UniqueIdentifier>
     </Filter>
-    <Filter Include="헤더 파일\Render\Model">
-      <UniqueIdentifier>{9f3fc770-47fc-4d49-a62b-b6b06dcec0dd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="헤더 파일\Etc">
       <UniqueIdentifier>{10ab6b7b-4a40-4ad3-864a-558f4f62792d}</UniqueIdentifier>
     </Filter>
     <Filter Include="헤더 파일\Render\Animation">
       <UniqueIdentifier>{e4eb544a-08dd-484e-9a0d-5ece642905e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Render\Model">
+      <UniqueIdentifier>{1c5a8a2f-99bc-4a24-8498-3cf3ba06802f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Render\Shader">
+      <UniqueIdentifier>{6eed4605-48d1-4cdd-b81b-6fe9ec9aaf79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model">
+      <UniqueIdentifier>{5d2aac48-43cc-4984-824c-7b9024c39846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader">
+      <UniqueIdentifier>{b0857ebd-0fb8-48e8-9baa-b51d09dcb96f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SkeletalModel.h">
-      <Filter>헤더 파일\Render\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticModel.h">
-      <Filter>헤더 파일\Render\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>헤더 파일\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>헤더 파일\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseModel.h">
-      <Filter>헤더 파일\Render\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelCollector.h">
-      <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>헤더 파일\Render\Animation</Filter>
@@ -62,7 +56,25 @@
     <ClInclude Include="Camera.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
-    <ClInclude Include="TestModel.h">
+    <ClInclude Include="D3Dclass.h">
+      <Filter>헤더 파일\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletalModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticModel.h">
+      <Filter>헤더 파일\Render\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>헤더 파일\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>헤더 파일\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorModel.h">
       <Filter>헤더 파일\Render\Model</Filter>
     </ClInclude>
   </ItemGroup>
@@ -70,29 +82,32 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BaseModel.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelCollector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticModel.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="TestModel.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Dclass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorModel.cpp">
+      <Filter>소스 파일\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseModel.cpp">
+      <Filter>소스 파일\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticModel.cpp">
+      <Filter>소스 파일\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>소스 파일\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>소스 파일\Shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -9,9 +9,8 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{b5b50d4d-e2f1-4c31-b5f7-5e28de4b4c90}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,16 +36,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Viewer.rc">
-      <Filter>리소스 파일</Filter>
-    </ResourceCompile>
+    <None Include="Color.ps">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Color.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="Viewer.ico">
-      <Filter>리소스 파일</Filter>
-    </Image>
+    <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
 </Project>

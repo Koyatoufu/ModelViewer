@@ -24,12 +24,18 @@
 #define SAFE_DELETE_ARRAY(pointArray) { if(pointArray){ delete [] pointArray; pointArray = nullptr; } }
 #define SAFE_RELEASE_D3DCONTENTS( pContents ) { if(pContents){ pContents->Release(); pContents = nullptr; } }
 
-struct SVertexType
+//struct VertexType
+//{
+//	DirectX::XMFLOAT3 position;
+//	DirectX::XMFLOAT2 UV;
+//	DirectX::XMFLOAT3 normal;
+//};
+
+struct MatrixBufferType
 {
-	DirectX::XMFLOAT3 vPosition;
-	DirectX::XMFLOAT4 vColor;
-	//DirectX::XMFLOAT2 vUV;
-	//DirectX::XMFLOAT3 vNormal;
+	DirectX::XMMATRIX world;
+	DirectX::XMMATRIX view;
+	DirectX::XMMATRIX projection;
 };
 
 enum ETextureType
@@ -43,9 +49,7 @@ enum ETextureType
 	ETEXTURE_MAX
 };
 
-enum EShaderType
+struct ModelData
 {
-	ESHADER_NORMAL,
-	ESHADER_TEST,
-	ESHADER_TOON
+
 };

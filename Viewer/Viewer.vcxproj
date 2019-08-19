@@ -113,7 +113,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\Lib;..\Third\DirectXTex_master\DirectXTex\Bin\Desktop_2017\$(Platform)\$(Configuration)\;..\Third\FBXSDK\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Render.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Render.lib;d3d11.lib;dxgi.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -168,11 +168,11 @@
     <ClCompile Include="WinApi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Viewer.rc" />
+    <None Include="Color.ps" />
+    <None Include="Color.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="Viewer.ico" />
+    <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

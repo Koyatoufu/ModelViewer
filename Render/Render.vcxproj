@@ -160,28 +160,30 @@
   <ItemGroup>
     <ClInclude Include="AnimationCollector.h" />
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Material.h" />
     <ClInclude Include="BaseModel.h" />
-    <ClInclude Include="ModelCollector.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ColorModel.h" />
+    <ClInclude Include="ColorShader.h" />
+    <ClInclude Include="D3Dclass.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="RenderDefine.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SingleTon.h" />
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="StaticModel.h" />
-    <ClInclude Include="TestModel.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseModel.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ColorModel.cpp" />
+    <ClCompile Include="ColorShader.cpp" />
+    <ClCompile Include="D3Dclass.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="ModelCollector.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StaticModel.cpp" />
-    <ClCompile Include="TestModel.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

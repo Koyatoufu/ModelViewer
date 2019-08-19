@@ -2,7 +2,7 @@
 #include "RenderDefine.h"
 
 class CMaterial;
-class CShader;
+//class CShader;
 
 class CBaseModel
 {
@@ -12,37 +12,28 @@ protected:
 	int m_nVertexCount;
 	int m_nIndexCount;
 
-	SVertexType* m_ArrVertex;
 	std::vector<CMaterial*> m_vecMaterial;
-
-	std::string m_strFilePath;
-	std::string m_strName;
-
-	struct SModelData* m_pModelData;
-
-	CShader* m_pShader;
+	ModelData* m_pModelData;
 
 	DirectX::XMFLOAT3 m_vecPosition;
 public:
 	CBaseModel();
 	virtual ~CBaseModel();
 
-	virtual HRESULT Initialize( ID3D11Device* pDevice, void * pModelData ) = 0;
+	virtual HRESULT Initialize( ID3D11Device* pDevice, ModelData * pModelData ) = 0;
 
 	virtual void Update() = 0;
 	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
 
 	CMaterial* GetMaterial(int nIndex = 0);
-	std::string GetName() const;
-	std::string GetFilePath() const;
 
-	CShader* GetShader() const { return m_pShader; }
-	void SetShader(CShader* pShader) { m_pShader = pShader; }
+	int	GetVertexCount() const { return m_nVertexCount; };
+	int	GetIndexCount() const { return m_nIndexCount; };
 
 	DirectX::XMFLOAT3 GetPosition() { return m_vecPosition; }
 	void SetPosition(float x, float y, float z);
 
 protected:
-	virtual HRESULT InitBuffers(ID3D11Device* pDevice , void* pModelData);
-	virtual HRESULT InitMaterial(ID3D11Device * pDevice) { return S_OK; };
+	virtual HRESULT InitBuffers(ID3D11Device* pDevice , void* pModelData) = 0;
+	virtual HRESULT InitMaterial(ID3D11Device * pDevice) = 0;
 };
