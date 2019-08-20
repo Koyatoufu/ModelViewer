@@ -44,8 +44,12 @@ HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 	m_hInstance = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
+	// 윈도우 화면 및 렌더러 화면 크기 등 설정
+	int nWidth	= 800;
+	int nHeight = 600;
+
 	HWND hWnd = CreateWindowW(g_szWindowClass, g_szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, 1600, 900, nullptr, nullptr, hInstance, nullptr);
+		CW_USEDEFAULT, 0, nWidth, nHeight, nullptr, nullptr, hInstance, nullptr);
 		
 	if (!hWnd)
 	{
@@ -59,7 +63,7 @@ HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 	m_pRenderer = CRenderer::CreateInstance();
 
-	if (FAILED(m_pRenderer->Initialize(m_hWnd)))
+	if (FAILED(m_pRenderer->Initialize(m_hWnd, nWidth, nHeight,false,true)))
 		return E_FAIL;
 
 	return S_OK;

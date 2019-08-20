@@ -91,17 +91,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Third\DirectXTex_master\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Importer\;..\Third\DirectXTex_master\DirectXTex\;..\Third\FBXSDK\Include\libxml2\libxml\;..\Third\FBXSDK\Include\fbxsdk;..\Third\FBXSDK\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/Ylsymbol %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Lib\;..\Third\DirectXTex_master\DirectXTex\Bin\Desktop_2017\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Importer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\Lib\;..\Third\DirectXTex_master\DirectXTex\Bin\Desktop_2017\$(Platform)\$(Configuration)\;..\Third\FBXSDK\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -165,6 +167,9 @@
     <ClInclude Include="ColorModel.h" />
     <ClInclude Include="ColorShader.h" />
     <ClInclude Include="D3Dclass.h" />
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="LightModel.h" />
+    <ClInclude Include="LightShader.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="RenderDefine.h" />
     <ClInclude Include="Renderer.h" />
@@ -182,11 +187,15 @@
     <ClCompile Include="ColorModel.cpp" />
     <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="D3Dclass.cpp" />
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightShader.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StaticModel.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureModel.cpp" />
+    <ClCompile Include="TextureShader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,7 +16,7 @@ public:
 
 	HRESULT Initialize(DirectX::XMFLOAT4 diffuseColor, DirectX::XMFLOAT4 ambientColor, DirectX::XMFLOAT4 specularColor );
 
-	HRESULT AddTexture(ID3D11Device* pDevice, HWND hWnd, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType = ETEXTURE_DIFFUSE);
+	HRESULT AddTexture(ID3D11Device* pDevice, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType = ETEXTURE_DIFFUSE);
 
 	CTexture* GetTexture(ETextureType eTextureType = ETEXTURE_DIFFUSE) { return m_pArrTexture[eTextureType]; }
 

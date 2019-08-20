@@ -5,8 +5,8 @@
 #include "D3Dclass.h"
 
 class CCamera;
-class CColorModel;
-class CColorShader;
+class CBaseModel;
+class CShader;
 
 class CRenderer:public CSingleTonT<CRenderer>
 {
@@ -19,8 +19,8 @@ private:
 	char m_szVideoCardDescription[128];
 
 	CCamera* m_pCamera;
-	CColorModel* m_pTestModel;
-	CColorShader* m_pTestShader;
+	CBaseModel* m_pTestModel;
+	CShader* m_pTestShader;
 	CD3DClass* m_pD3D;
 
 private:
@@ -30,10 +30,11 @@ protected:
 	CRenderer();
 	~CRenderer();
 public:
-	HRESULT Initialize(HWND hWnd);
+	HRESULT Initialize(HWND hWnd,int nWidth, int nHeight, bool bFullScreen, bool bSync);
 
 	void Update();
 	void Render();
 
 	CCamera* GetRendererCamera() { return m_pCamera; }
+	CD3DClass* GetD3D() { return m_pD3D; }
 };

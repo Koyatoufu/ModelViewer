@@ -30,6 +30,18 @@
     <Filter Include="소스 파일\Shader">
       <UniqueIdentifier>{b0857ebd-0fb8-48e8-9baa-b51d09dcb96f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Render\Shader\tutorial">
+      <UniqueIdentifier>{1a91f18a-d551-4a44-a534-cb0cb5e37237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Render\Model\tutorial">
+      <UniqueIdentifier>{13b88c16-2a69-4342-8dbf-571fca84d806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model\tutorial">
+      <UniqueIdentifier>{9398da97-e324-44af-96b6-ecc7b8d32258}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Shader\tutorial">
+      <UniqueIdentifier>{792664c1-5f52-4324-b394-a56f608b81a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -72,16 +84,25 @@
       <Filter>헤더 파일\Render\Shader</Filter>
     </ClInclude>
     <ClInclude Include="ColorShader.h">
-      <Filter>헤더 파일\Render\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorModel.h">
-      <Filter>헤더 파일\Render\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureModel.h">
-      <Filter>헤더 파일\Render\Model</Filter>
+      <Filter>헤더 파일\Render\Shader\tutorial</Filter>
     </ClInclude>
     <ClInclude Include="TextureShader.h">
-      <Filter>헤더 파일\Render\Shader</Filter>
+      <Filter>헤더 파일\Render\Shader\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorModel.h">
+      <Filter>헤더 파일\Render\Model\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureModel.h">
+      <Filter>헤더 파일\Render\Model\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="LightShader.h">
+      <Filter>헤더 파일\Render\Shader\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="LightModel.h">
+      <Filter>헤더 파일\Render\Model\tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>헤더 파일\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -100,20 +121,32 @@
     <ClCompile Include="D3Dclass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ColorModel.cpp">
-      <Filter>소스 파일\Model</Filter>
-    </ClCompile>
     <ClCompile Include="BaseModel.cpp">
       <Filter>소스 파일\Model</Filter>
     </ClCompile>
     <ClCompile Include="StaticModel.cpp">
       <Filter>소스 파일\Model</Filter>
     </ClCompile>
-    <ClCompile Include="ColorShader.cpp">
-      <Filter>소스 파일\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>소스 파일\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>소스 파일\Shader\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureModel.cpp">
+      <Filter>소스 파일\Model\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorModel.cpp">
+      <Filter>소스 파일\Model\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShader.cpp">
+      <Filter>소스 파일\Shader\tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="LightShader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

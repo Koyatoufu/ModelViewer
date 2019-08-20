@@ -31,7 +31,7 @@ void CColorModel::Update()
 }
 
 
-HRESULT CColorModel::InitBuffers(ID3D11Device* pDevice, void* pModelData)
+HRESULT CColorModel::InitBuffers(ID3D11Device* pDevice, ModelData* pModelData)
 {
 	ColorVertexType* pVertices;
 	unsigned long* pIndices;
@@ -108,16 +108,18 @@ HRESULT CColorModel::InitBuffers(ID3D11Device* pDevice, void* pModelData)
 	SAFE_DELETE_ARRAY(pVertices);
 	SAFE_DELETE_ARRAY(pIndices);
 
+	m_nInstanceCount = 1;
+
 	return S_OK;
 }
 
-HRESULT CColorModel::InitMaterial(ID3D11Device * pDevice)
+HRESULT CColorModel::InitMaterial(ID3D11Device * pDevice, ModelData* pModelData)
 {
 	return S_OK;
 }
 
 
-void CColorModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void CColorModel::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
 {
 	unsigned int unStride;
 	unsigned int unOffset;
@@ -128,11 +130,11 @@ void CColorModel::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	unOffset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &unStride, &unOffset);
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &unStride, &unOffset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

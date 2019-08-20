@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Render\;..\Third\DirectXTex_master\DirectXTex;..\Third\FBXSDK\Include\;..\Third\FBXSDK\Include\libxml2\libxml\;..\Third\FBXSDK\Include\fbxsdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Render\;..\Third\DirectXTex_master\DirectXTex;..\Third\FBXSDK\Include\;..\Third\FBXSDK\Include\libxml2\libxml\;..\Third\FBXSDK\Include\fbxsdk;..\Importer\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -113,7 +113,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;..\Lib;..\Third\DirectXTex_master\DirectXTex\Bin\Desktop_2017\$(Platform)\$(Configuration)\;..\Third\FBXSDK\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Render.lib;d3d11.lib;dxgi.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Importer.lib;Render.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -168,11 +168,15 @@
     <ClCompile Include="WinApi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Color.ps" />
-    <None Include="Color.vs" />
+    <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Viewer.rc" />
+    <None Include="Shader\Color.ps" />
+    <None Include="Shader\Color.vs" />
+    <None Include="Shader\light.ps" />
+    <None Include="Shader\light.vs" />
+    <None Include="Shader\texture.ps" />
+    <None Include="Shader\texture.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

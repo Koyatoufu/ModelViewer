@@ -22,9 +22,14 @@ public:
 
 	void OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, const WCHAR* wszFileName);
 
-	HRESULT Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, MatrixBufferType& matrixBuffer, CMaterial* pMaterial = nullptr);
+	HRESULT Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, CMaterial* pMaterial = nullptr,
+		MatrixBufferType* pMatrixBuffer = nullptr, LightBufferType* pLightBuffer = nullptr);
+	HRESULT Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount,int nInstanceCount, CMaterial* pMaterial = nullptr,
+		MatrixBufferType* pMatrixBuffer = nullptr, LightBufferType* pLightBuffer = nullptr);
 protected:
-	virtual HRESULT SetShaderParameters(ID3D11DeviceContext* pDeviceContext, MatrixBufferType& matrixBuffer, CMaterial* pMaterial = nullptr) = 0;
+	virtual HRESULT SetShaderParameters(ID3D11DeviceContext* pDeviceContext, CMaterial* pMaterial = nullptr,
+		MatrixBufferType* pMatrixBuffer = nullptr, LightBufferType* pLightBuffer = nullptr) = 0;
 private:
 	void RenderShader(ID3D11DeviceContext* pDeviceContext, int nIndexCount);
+	void RenderShader(ID3D11DeviceContext* pDeviceContext, int nIndexCount, int nInstanceCount);
 };

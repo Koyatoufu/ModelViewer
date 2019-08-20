@@ -10,11 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Viewer", "Viewer.vcxproj", 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Render", "..\Render\Render.vcxproj", "{03971EB0-E93D-4A8D-94D4-546DDF997858}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C56088BA-0B18-4630-BF19-BA945F187391} = {C56088BA-0B18-4630-BF19-BA945F187391}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Importer", "..\Importer\Importer.vcxproj", "{C56088BA-0B18-4630-BF19-BA945F187391}"
-	ProjectSection(ProjectDependencies) = postProject
-		{03971EB0-E93D-4A8D-94D4-546DDF997858} = {03971EB0-E93D-4A8D-94D4-546DDF997858}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -21,8 +21,8 @@ public:
 
 private:
 	CColorModel(const CColorModel&) {};
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers(ID3D11DeviceContext* pDeviceContext);
 protected:
-	virtual HRESULT InitBuffers(ID3D11Device* pDevice, void* pModelData);
-	virtual HRESULT InitMaterial(ID3D11Device * pDevice);
+	virtual HRESULT InitBuffers(ID3D11Device* pDevice, ModelData* pModelData);
+	virtual HRESULT InitMaterial(ID3D11Device * pDevice, ModelData* pModelData);
 };

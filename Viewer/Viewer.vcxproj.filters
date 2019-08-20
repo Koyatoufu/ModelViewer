@@ -36,14 +36,26 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Color.ps">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Color.vs">
-      <Filter>Shader</Filter>
-    </None>
+    <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Viewer.rc" />
+    <None Include="Shader\Color.ps">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\Color.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\texture.ps">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\texture.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\light.ps">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\light.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

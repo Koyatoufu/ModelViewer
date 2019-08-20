@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include <stdlib.h>
 #include "D3Dclass.h"
+#include "TextureModel.h"
+#include "TextureShader.h"
 #include "ColorModel.h"
 #include "ColorShader.h"
 #include "Camera.h"
@@ -31,48 +33,42 @@ CRenderer::~CRenderer()
 	SAFE_DELETE(m_pCamera);
 }
 
-HRESULT CRenderer::Initialize(HWND hWnd)
+HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScreen, bool bSync)
 {
 	m_hWnd = hWnd;
 
 	m_pD3D = new CD3DClass();
-	if (!m_pD3D->Initialize(1600, 900, true, m_hWnd, false, 1000.f, 0.1f))
-	{
+	if (!m_pD3D->Initialize(nWidth, nHeight, bSync, m_hWnd, bFullScreen, 1000.f, 0.1f))
 		return E_FAIL;
-	}
 
 	ID3D11Device* pDevice = m_pD3D->GetDevice();
 
 	m_pCamera = new CCamera();
 	m_pCamera->SetPosition(0.f, 0.f, -10.f);
 
-	m_pTestModel = new CColorModel();
+	m_pTestModel = new CTextureModel();
 	if (FAILED(m_pTestModel->Initialize(pDevice,nullptr)))
 	{
 		return E_FAIL;
 	}
 
-	m_pTestShader = new CColorShader();
+	m_pTestShader = new CTextureShader();
 	if (FAILED(m_pTestShader->Initialize(pDevice)))
 	{
 		return E_FAIL;
 	}
-
-	//m_pTestModel->SetShader(pShader);
 
 	return S_OK;
 }
 
 void CRenderer::Update()
 {
-
+	m_pCamera->Update();
 }
 
 void CRenderer::Render()
 {
-	m_pD3D->BeginScene(0.0f,0.0f,1.0f,1.0f);
-
-	m_pCamera->Render();
+	m_pD3D->BeginScene(0.0f,0.0f,0.0f,1.0f);
 	
 	MatrixBufferType matrixBuffer;
 	ID3D11DeviceContext* pDeviceContext = m_pD3D->GetDeviceContext();
@@ -83,7 +79,12 @@ void CRenderer::Render()
 	
 	m_pTestModel->Render(pDeviceContext);
 
-	m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(), matrixBuffer);
+	CMaterial* pMaterial = m_pTestModel->GetMaterial();
+
+	if(m_pTestModel->IsInstceUse() == false)
+		m_pTestShader->Render(pDeviceContext, m_pTestModel->GetIndexCount(), pMaterial, &matrixBuffer);
+	else
+		m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(),m_pTestModel->GetInstanceCount(), pMaterial, &matrixBuffer);
 	
 	m_pD3D->EndScene();
 }

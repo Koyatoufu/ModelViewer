@@ -27,9 +27,9 @@ HRESULT CMaterial::Initialize(DirectX::XMFLOAT4 diffuseColor, DirectX::XMFLOAT4 
 	return S_OK;
 }
 
-HRESULT CMaterial::AddTexture(ID3D11Device* pDevice, HWND hWnd, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType)
+HRESULT CMaterial::AddTexture(ID3D11Device* pDevice, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType)
 {
-	if ( pDevice == nullptr || hWnd == nullptr )
+	if ( pDevice == nullptr )
 		return E_FAIL;
 
 	if (strTexFileName.empty())
@@ -44,7 +44,8 @@ HRESULT CMaterial::AddTexture(ID3D11Device* pDevice, HWND hWnd, std::basic_strin
 	}
 
 	CTexture* pTexture = new CTexture();
-	pTexture->Initiazlie(pDevice, strTexFileName);
+	if (FAILED(pTexture->Initiazlie(pDevice, strTexFileName)))
+		E_FAIL;
 
 	m_pArrTexture[eTextureType] = pTexture;
 

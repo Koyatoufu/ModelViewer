@@ -8,7 +8,7 @@ CStaticModel::~CStaticModel()
 {
 }
 
-HRESULT CStaticModel::Initialize(ID3D11Device * pDevice, void* pData)
+HRESULT CStaticModel::Initialize(ID3D11Device * pDevice, ModelData* pData)
 {
 	return S_OK;
 }

@@ -31,7 +31,7 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 	pixelShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	std::wstring strFileName = L"color.vs";
+	std::wstring strFileName = L".\\shader\\color.vs";
 
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ColorVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS,
 		0, &vertexShaderBuffer, &errorMessage)))
@@ -49,7 +49,7 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 		return E_FAIL;
 	}
 
-	strFileName = L"color.ps";
+	strFileName = L".\\shader\\color.ps";
 
 	// Compile the pixel shader code.
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ColorPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS,
@@ -132,7 +132,8 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 	return S_OK;
 }
 
-HRESULT CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, MatrixBufferType& matrixBuffer, CMaterial* pMaterial)
+HRESULT CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, CMaterial* pMaterial,
+	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;
@@ -140,9 +141,9 @@ HRESULT CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, M
 
 
 	// Transpose the matrices to prepare them for the shader.
-	matrixBuffer.world = XMMatrixTranspose(matrixBuffer.world);
-	matrixBuffer.view = XMMatrixTranspose(matrixBuffer.view);
-	matrixBuffer.projection = XMMatrixTranspose(matrixBuffer.projection);
+	pMatrixBuffer->world = XMMatrixTranspose(pMatrixBuffer->world);
+	pMatrixBuffer->view = XMMatrixTranspose(pMatrixBuffer->view);
+	pMatrixBuffer->projection = XMMatrixTranspose(pMatrixBuffer->projection);
 
 	// Lock the constant buffer so it can be written to.
 	if (FAILED(pDeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
@@ -152,9 +153,9 @@ HRESULT CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, M
 	dataPtr = (MatrixBufferType*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->world = matrixBuffer.world;
-	dataPtr->view = matrixBuffer.view;
-	dataPtr->projection = matrixBuffer.projection;
+	dataPtr->world = pMatrixBuffer->world;
+	dataPtr->view = pMatrixBuffer->view;
+	dataPtr->projection = pMatrixBuffer->projection;
 
 	// Unlock the constant buffer.
 	pDeviceContext->Unmap(m_pMatrixBuffer, 0);

@@ -72,13 +72,25 @@ void CShader::OutputShaderErrorMessage(ID3D10Blob * pErrorMessage, const WCHAR *
 	MessageBox(NULL, _T("Error Compiling Shader"), _T("Error Compiling Shader"), MB_OK | MB_ICONERROR);
 }
 
-HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, MatrixBufferType& matrixBuffer, CMaterial* pMaterial)
+HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, CMaterial* pMaterial, MatrixBufferType* pMatrixBuffer , LightBufferType* pLightBuffer )
 {
-	if (FAILED(SetShaderParameters(pDeviceContext, matrixBuffer, pMaterial)))
+	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer)))
 		return E_FAIL;
 
 	//Now render the prepared buffers with the shader.
 	RenderShader(pDeviceContext, nIndexCount);
+
+	return S_OK;
+}
+
+HRESULT CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount, int nInstanceCount, CMaterial* pMaterial,
+	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer)
+{
+	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer)))
+		return E_FAIL;
+
+	//Now render the prepared buffers with the shader.
+	RenderShader(pDeviceContext, nIndexCount, nInstanceCount);
 
 	return S_OK;
 }
@@ -91,6 +103,24 @@ void CShader::RenderShader(ID3D11DeviceContext* pDeviceContext, int nIndexCount)
 	pDeviceContext->VSSetShader(m_pVertexShader, NULL, 0);
 	pDeviceContext->PSSetShader(m_pPixelShader, NULL, 0);
 
+	if(m_pSampleState)
+		pDeviceContext->PSSetSamplers(0, 1, &m_pSampleState);
+
 	// Render the triangle.
 	pDeviceContext->DrawIndexed(nIndexCount, 0, 0);
+}
+
+void CShader::RenderShader(ID3D11DeviceContext * pDeviceContext, int nIndexCount, int nInstanceCount)
+{
+	pDeviceContext->IASetInputLayout(m_pLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	pDeviceContext->VSSetShader(m_pVertexShader, NULL, 0);
+	pDeviceContext->PSSetShader(m_pPixelShader, NULL, 0);
+
+	if (m_pSampleState)
+		pDeviceContext->PSSetSamplers(0, 1, &m_pSampleState);
+
+	// Render the triangle.
+	pDeviceContext->DrawIndexedInstanced(nIndexCount, nInstanceCount, 0, 0, 0);
 }

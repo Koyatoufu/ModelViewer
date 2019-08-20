@@ -6,7 +6,10 @@ CBaseModel::CBaseModel():
 	m_pVertexBuffer(nullptr),
 	m_pIndexBuffer(nullptr),
 	m_nVertexCount(0),
-	m_nIndexCount(0)
+	m_nIndexCount(0),
+	m_pInstanceBuffer(nullptr),
+	m_nInstanceCount(0),
+	m_bInstnceUse(false)
 {
 }
 
@@ -14,6 +17,7 @@ CBaseModel::~CBaseModel()
 {
 	SAFE_RELEASE_D3DCONTENTS(m_pVertexBuffer);
 	SAFE_RELEASE_D3DCONTENTS(m_pIndexBuffer);
+	SAFE_RELEASE_D3DCONTENTS(m_pInstanceBuffer);
 
 	for (size_t i = 0; i < m_vecMaterial.size(); ++i)
 		SAFE_DELETE(m_vecMaterial[i]);

@@ -3,14 +3,12 @@
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"D3DCompiler.lib")
-#pragma comment(lib,"directxtex.lib")
 
 #include <d3d11.h>
 #include <dxgi.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 
-#include <DirectXTex.h>
 #include <tchar.h>
 
 #include <fstream>
@@ -38,6 +36,16 @@ struct MatrixBufferType
 	DirectX::XMMATRIX projection;
 };
 
+struct LightBufferType
+{
+	DirectX::XMFLOAT4 diffuseColor;
+	DirectX::XMFLOAT4 ambientColor;
+	DirectX::XMFLOAT4 specularColor;
+	DirectX::XMFLOAT3 lightDirection;
+	float specularPower;
+	float padding;
+};
+
 enum ETextureType
 {
 	ETEXTURE_DIFFUSE,
@@ -49,7 +57,3 @@ enum ETextureType
 	ETEXTURE_MAX
 };
 
-struct ModelData
-{
-
-};

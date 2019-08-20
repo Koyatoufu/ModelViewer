@@ -53,7 +53,7 @@ DirectX::XMFLOAT3 CCamera::GetRotation()
 }
 
 
-void CCamera::Render()
+void CCamera::Update()
 {
 	// Setup the vector that points upwards.
 	DirectX::XMFLOAT3 up = DirectX::XMFLOAT3(0.0f,1.0f,0.0f);
