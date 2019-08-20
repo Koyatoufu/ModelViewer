@@ -5,7 +5,7 @@ namespace ImporterUtil
 {
 	namespace Model
 	{
-		ModelData* (*pModelLoadFuntions[E_IMPORT_FORMAT_MAX])(std::basic_string<TCHAR> strFileName);
+		static ModelData* (*pModelLoadFuntions[E_IMPORT_FORMAT_MAX])(std::basic_string<TCHAR> strFileName);
 
 		void SetFunctionPointSet();
 

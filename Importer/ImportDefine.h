@@ -6,6 +6,7 @@
 
 #include <DirectXTex.h>
 
+#include <iostream>
 #include <fstream>
 
 #include <string>
@@ -20,7 +21,17 @@ enum E_IMPORT_FORMAT_TYPE
 	E_IMPORT_FORMAT_MAX
 };
 
+struct VertexData
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 normal;
+};
+
 struct ModelData
 {
-
+	int nVertexCount;
+	int nIndexCount;
+	VertexData *parVertices;
+	bool bSkinned;
 };
