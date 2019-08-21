@@ -19,7 +19,7 @@ HRESULT CTexture::Initiazlie(ID3D11Device * pDevice, std::basic_string<TCHAR> st
 	if (strFileName.empty() )
 		return E_FAIL;
 
-	DirectX::ScratchImage image = ImporterUtil::LoadTextureFromFile(strFileName);
+	DirectX::ScratchImage image = ImportUtil::LoadTextureFromFile(strFileName);
 
 	if (FAILED(DirectX::CreateShaderResourceView(pDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &m_pTextureView)))
 		return E_FAIL;

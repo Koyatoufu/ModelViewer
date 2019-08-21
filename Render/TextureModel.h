@@ -19,14 +19,14 @@ public:
 	CTextureModel();
 	virtual ~CTextureModel();
 
-	virtual HRESULT Initialize(ID3D11Device* pDevice, ModelData * pModelData);
-	virtual void Render(ID3D11DeviceContext* pDeviceContext);
+	virtual HRESULT Initialize(ID3D11Device* pDevice, ModelData * pModelData) override;
+	virtual void Render(ID3D11DeviceContext* pDeviceContext) override;
 
-	virtual void Update();
+	virtual void Update() override;
 private:
 	CTextureModel(const CTextureModel&) {};
 	void RenderBuffers(ID3D11DeviceContext* pDeviceContext);
 protected:
-	virtual HRESULT InitBuffers(ID3D11Device* pDevice, ModelData* pModelData);
-	virtual HRESULT InitMaterial(ID3D11Device * pDevice, ModelData* pModelData);
+	virtual HRESULT InitBuffers(ID3D11Device* pDevice, ModelData* pModelData) override;
+	virtual HRESULT InitMaterial(ID3D11Device * pDevice, ModelData* pModelData) override;
 };

@@ -1,7 +1,7 @@
 #include "ImportUtil.h"
 #include "ModelImport.h"
 
-DirectX::ScratchImage ImporterUtil::LoadTextureFromFile(std::basic_string<TCHAR> strFileName)
+DirectX::ScratchImage ImportUtil::LoadTextureFromFile(std::basic_string<TCHAR> strFileName)
 {
 	DirectX::ScratchImage image;
 
@@ -24,7 +24,7 @@ DirectX::ScratchImage ImporterUtil::LoadTextureFromFile(std::basic_string<TCHAR>
 	return image;
 }
 
-ModelData* ImporterUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
+ModelData* ImportUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
 {
 	TCHAR szExt[256];
 	_tsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, 256);
@@ -43,12 +43,12 @@ ModelData* ImporterUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
 	if(eImportFormat == E_IMPORT_FORMAT_MAX)
 		return nullptr;
 
-	ModelData* (*pFunc)(std::basic_string<TCHAR> strFileName) = ImporterUtil::Model::pModelLoadFuntions[eImportFormat];
+	ModelData* (*pFunc)(std::basic_string<TCHAR> strFileName) = ImportUtil::Model::pModelLoadFuntions[eImportFormat];
 
 	if (pFunc == nullptr)
 	{
-		ImporterUtil::Model::SetFunctionPointSet();
-		pFunc = ImporterUtil::Model::pModelLoadFuntions[eImportFormat];
+		ImportUtil::Model::SetFunctionPointSet();
+		pFunc = ImportUtil::Model::pModelLoadFuntions[eImportFormat];
 	}
 
 	return pFunc(strFileName);

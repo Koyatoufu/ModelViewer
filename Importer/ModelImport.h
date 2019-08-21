@@ -1,7 +1,7 @@
 #pragma once
 #include "ImportDefine.h"
 
-namespace ImporterUtil
+namespace ImportUtil
 {
 	namespace Model
 	{

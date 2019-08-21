@@ -26,6 +26,26 @@ struct VertexData
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT2 uv;
 	DirectX::XMFLOAT3 normal;
+	int nMaterialIdx;
+
+	VertexData() :position(0.0f,0.0f,0.0f), uv(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f),nMaterialIdx(0) {};
+};
+
+struct MaterialData
+{
+	struct MaterialInfo
+	{
+		DirectX::XMFLOAT4 ambient;
+		DirectX::XMFLOAT4 diffuse;
+		DirectX::XMFLOAT4 specular;
+
+		std::basic_string<TCHAR> strNormalMap;
+		std::basic_string<TCHAR> strDiffuseMap;
+		std::basic_string<TCHAR> strSpecularMap;
+	};
+
+	int nMaterialCount;
+	MaterialInfo* parMaterialInfo;
 };
 
 struct ModelData
@@ -34,4 +54,21 @@ struct ModelData
 	int nIndexCount;
 	VertexData *parVertices;
 	bool bSkinned;
+	MaterialData *pMateiralData;
+
+	ModelData() : nVertexCount(0),nIndexCount(0),parVertices(NULL),bSkinned(false), pMateiralData(NULL){}
+	~ModelData() 
+	{
+		if (pMateiralData)
+		{
+			delete pMateiralData;
+			pMateiralData = nullptr;
+		}
+
+		if (parVertices)
+		{
+			delete[] parVertices;
+			parVertices = nullptr;
+		}
+	}
 };

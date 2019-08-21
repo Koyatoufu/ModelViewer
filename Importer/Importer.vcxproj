@@ -161,10 +161,12 @@
   <ItemGroup>
     <ClInclude Include="ImportDefine.h" />
     <ClInclude Include="ImportUtil.h" />
+    <ClInclude Include="MaterialImport.h" />
     <ClInclude Include="ModelImport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImportUtil.cpp" />
+    <ClCompile Include="MaterialImport.cpp" />
     <ClCompile Include="ModelImport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
