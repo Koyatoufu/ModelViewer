@@ -10,6 +10,8 @@ CCamera::CCamera()
 	m_rotation.x = 0.0f;
 	m_rotation.y = 0.0f;
 	m_rotation.z = 0.0f;
+
+	m_fPadding = 0.0f;
 }
 
 
@@ -40,6 +42,11 @@ void CCamera::SetRotation(float x, float y, float z)
 	return;
 }
 
+void CCamera::SetPadding(float fPadding)
+{
+	m_fPadding = fPadding;
+}
+
 
 DirectX::XMFLOAT3 CCamera::GetPosition()
 {
@@ -50,6 +57,11 @@ DirectX::XMFLOAT3 CCamera::GetPosition()
 DirectX::XMFLOAT3 CCamera::GetRotation()
 {
 	return m_rotation;
+}
+
+float CCamera::GetPadding()
+{
+	return m_fPadding;
 }
 
 

@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\Render\;..\Third\DirectXTex_master\DirectXTex;..\Third\FBXSDK\Include\;..\Third\FBXSDK\Include\libxml2\libxml\;..\Third\FBXSDK\Include\fbxsdk;..\Importer\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Importer\;..\Render\;..\Third\DirectXTex_master\DirectXTex;..\Third\FBXSDK\Include\;..\Third\FBXSDK\Include\libxml2\libxml\;..\Third\FBXSDK\Include\fbxsdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>

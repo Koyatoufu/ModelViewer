@@ -133,7 +133,7 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 }
 
 HRESULT CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, CMaterial* pMaterial,
-	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer)
+	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer, CameraBufferType* pCameraBuffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;

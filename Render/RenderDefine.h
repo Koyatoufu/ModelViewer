@@ -43,6 +43,11 @@ struct LightBufferType
 	DirectX::XMFLOAT4 specularColor;
 	DirectX::XMFLOAT3 lightDirection;
 	float specularPower;
+};
+
+struct CameraBufferType
+{
+	DirectX::XMFLOAT3 cameraPosition;
 	float padding;
 };
 

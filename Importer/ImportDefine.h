@@ -12,6 +12,10 @@
 #include <string>
 #include <tchar.h>
 
+#define SAFE_DELETE(point) { if(point){ delete point; point = nullptr; } }
+#define SAFE_DELETE_ARRAY(pointArray) { if(pointArray){ delete [] pointArray; pointArray = nullptr; } }
+#define SAFE_RELEASE_D3DCONTENTS( pContents ) { if(pContents){ pContents->Release(); pContents = nullptr; } }
+
 enum E_IMPORT_FORMAT_TYPE
 {
 	E_IMPORT_FORMAT_TXT,
@@ -26,15 +30,24 @@ struct VertexData
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT2 uv;
 	DirectX::XMFLOAT3 normal;
-	int nMaterialIdx;
 
-	VertexData() :position(0.0f,0.0f,0.0f), uv(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f),nMaterialIdx(0) {};
+	VertexData() :position(0.0f,0.0f,0.0f), uv(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f) {};
+};
+
+struct VertexGroup
+{
+	std::vector<VertexData*> vtVertexDatas;
+	std::vector<int> vtIndexDatas;
+
+	int nMaterialIdx;
 };
 
 struct MaterialData
 {
 	struct MaterialInfo
 	{
+		std::basic_string<TCHAR> strName;
+
 		DirectX::XMFLOAT4 ambient;
 		DirectX::XMFLOAT4 diffuse;
 		DirectX::XMFLOAT4 specular;
@@ -44,31 +57,18 @@ struct MaterialData
 		std::basic_string<TCHAR> strSpecularMap;
 	};
 
-	int nMaterialCount;
-	MaterialInfo* parMaterialInfo;
+	std::vector<MaterialInfo*> vtMaterialInfo;
 };
 
 struct ModelData
 {
-	int nVertexCount;
-	int nIndexCount;
-	VertexData *parVertices;
+	std::vector< VertexGroup* > vtMeshes;
+	MaterialData* pMaterialData;
 	bool bSkinned;
-	MaterialData *pMateiralData;
 
-	ModelData() : nVertexCount(0),nIndexCount(0),parVertices(NULL),bSkinned(false), pMateiralData(NULL){}
-	~ModelData() 
+	ModelData() :bSkinned(false), pMaterialData(nullptr){}
+	~ModelData()
 	{
-		if (pMateiralData)
-		{
-			delete pMateiralData;
-			pMateiralData = nullptr;
-		}
-
-		if (parVertices)
-		{
-			delete[] parVertices;
-			parVertices = nullptr;
-		}
+		SAFE_DELETE(pMaterialData);
 	}
 };

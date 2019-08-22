@@ -13,7 +13,7 @@ CLight::~CLight()
 {
 }
 
-void CLight::SetAmibentColor(float r, float g, float b, float a)
+void CLight::SetAmbientColor(float r, float g, float b, float a)
 {
 	m_ambientColor.x = r;
 	m_ambientColor.y = g;

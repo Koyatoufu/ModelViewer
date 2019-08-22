@@ -7,6 +7,7 @@
 class CCamera;
 class CBaseModel;
 class CShader;
+class CLight;
 
 class CRenderer:public CSingleTonT<CRenderer>
 {
@@ -21,6 +22,8 @@ private:
 	CCamera* m_pCamera;
 	CBaseModel* m_pTestModel;
 	CShader* m_pTestShader;
+	CLight*	m_pLight;
+
 	CD3DClass* m_pD3D;
 
 private:
@@ -36,5 +39,6 @@ public:
 	void Render();
 
 	CCamera* GetRendererCamera() { return m_pCamera; }
+	CLight* GetLight() { return m_pLight; }
 	CD3DClass* GetD3D() { return m_pD3D; }
 };

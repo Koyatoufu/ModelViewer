@@ -33,6 +33,7 @@ CShader::CShader():
 	m_pLayout(nullptr),
 	m_pMatrixBuffer(nullptr),
 	m_pLightBuffer(nullptr),
+	m_pCameraBuffer(nullptr),
 	m_pSampleState(nullptr)
 {
 }
@@ -41,6 +42,7 @@ CShader::~CShader()
 {
 	SAFE_RELEASE_D3DCONTENTS(m_pLightBuffer);
 	SAFE_RELEASE_D3DCONTENTS(m_pMatrixBuffer);
+	SAFE_RELEASE_D3DCONTENTS(m_pCameraBuffer);
 
 	SAFE_RELEASE_D3DCONTENTS(m_pSampleState);
 	SAFE_RELEASE_D3DCONTENTS(m_pLayout);
@@ -72,9 +74,10 @@ void CShader::OutputShaderErrorMessage(ID3D10Blob * pErrorMessage, const WCHAR *
 	MessageBox(NULL, _T("Error Compiling Shader"), _T("Error Compiling Shader"), MB_OK | MB_ICONERROR);
 }
 
-HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, CMaterial* pMaterial, MatrixBufferType* pMatrixBuffer , LightBufferType* pLightBuffer )
+HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, CMaterial* pMaterial, 
+	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer, CameraBufferType* pCameraBuffer)
 {
-	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer)))
+	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer, pCameraBuffer)))
 		return E_FAIL;
 
 	//Now render the prepared buffers with the shader.
@@ -83,10 +86,10 @@ HRESULT CShader::Render(ID3D11DeviceContext* pDeviceContext, int nIndexCount, CM
 	return S_OK;
 }
 
-HRESULT CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount, int nInstanceCount, CMaterial* pMaterial,
-	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer)
+HRESULT CShader::Render(ID3D11DeviceContext * pDeviceContext, int nIndexCount, int nInstanceCount,
+ CMaterial* pMaterial, MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer, CameraBufferType* pCameraBuffer)
 {
-	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer)))
+	if (FAILED(SetShaderParameters(pDeviceContext, pMaterial, pMatrixBuffer, pLightBuffer, pCameraBuffer)))
 		return E_FAIL;
 
 	//Now render the prepared buffers with the shader.

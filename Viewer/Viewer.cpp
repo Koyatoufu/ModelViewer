@@ -54,7 +54,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			//DestroyWindow(hWnd);
 			PostQuitMessage(0);
-			CWinAPI::Get()->SetLoop(false);
+			CWinAPI::GetInstance()->SetLoop(false);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -72,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 	case WM_CLOSE:
 		PostQuitMessage(0);
-		CWinAPI::Get()->SetLoop(false);
+		CWinAPI::GetInstance()->SetLoop(false);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

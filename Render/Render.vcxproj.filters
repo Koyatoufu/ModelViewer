@@ -62,9 +62,6 @@
     <ClInclude Include="RenderDefine.h">
       <Filter>헤더 파일\Etc</Filter>
     </ClInclude>
-    <ClInclude Include="SingleTon.h">
-      <Filter>헤더 파일\Etc</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
@@ -142,14 +139,14 @@
     <ClCompile Include="TextureShader.cpp">
       <Filter>소스 파일\Shader\tutorial</Filter>
     </ClCompile>
-    <ClCompile Include="LightShader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="LightShader.cpp">
+      <Filter>소스 파일\Shader\tutorial</Filter>
+    </ClCompile>
     <ClCompile Include="LightModel.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Model\tutorial</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

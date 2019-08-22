@@ -14,7 +14,7 @@ public:
 	CLight();
 	~CLight();
 
-	void SetAmibentColor( float r, float g, float b, float a );
+	void SetAmbientColor( float r, float g, float b, float a );
 	void SetDiffuseColor(float r, float g, float b, float a);
 	void SetSpecularColor(float r, float g, float b, float a);
 	void SetSpecularPower(float fPower);

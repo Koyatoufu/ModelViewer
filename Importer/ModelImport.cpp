@@ -1,21 +1,34 @@
 #include "ModelImport.h"
 #include "MaterialImport.h"
 
-void ImportUtil::Model::SetFunctionPointSet()
+CModelImporter::CModelImporter()
 {
-	pModelLoadFuntions[E_IMPORT_FORMAT_TXT] = TxtLoad;
-	pModelLoadFuntions[E_IMPORT_FORMAT_OBJ] = ObjLoad;
-	pModelLoadFuntions[E_IMPORT_FORMAT_FBX] = FbxLoad;
-	pModelLoadFuntions[E_IMPORT_FORMAT_MD5] = MD5Load;
 }
 
-ModelData * ImportUtil::Model::TxtLoad(std::basic_string<TCHAR> strFileName)
+CModelImporter::~CModelImporter()
+{
+}
+
+void CModelImporter::SetFunctionPointSet()
+{
+	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_TXT] = CModelImporter::TxtLoad;
+	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_OBJ] = CModelImporter::ObjLoad;
+	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_FBX] = CModelImporter::FbxLoad;
+	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_MD5] = CModelImporter::MD5Load;
+}
+
+ModelData * CModelImporter::LoadModel(std::basic_string<TCHAR> strFileName, E_IMPORT_FORMAT_TYPE eType)
+{
+	return nullptr;
+}
+
+ModelData * CModelImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 {
 	std::ifstream fIn;
-	
+
 	fIn.open(strFileName.c_str());
 
-	if(fIn.fail())
+	if (fIn.fail())
 		return nullptr;
 
 	// Read up to the value of vertex count.
@@ -28,14 +41,16 @@ ModelData * ImportUtil::Model::TxtLoad(std::basic_string<TCHAR> strFileName)
 
 	ModelData* pModelData = new ModelData();
 
+	VertexGroup* pGroup = new VertexGroup();
+
+	int nVertexCount = 0;
+
 	// Read in the vertex count.
-	fIn >> pModelData->nVertexCount;
+	fIn >> nVertexCount;
 
 	// Set the number of indices to be the same as the vertex count.
-	pModelData->nIndexCount = pModelData->nVertexCount;
-
 	// Create the model using the vertex count that was read in.
-	VertexData* pArData = new VertexData[pModelData->nVertexCount];
+	
 
 	// Read up to the beginning of the data.
 	fIn.get(input);
@@ -47,14 +62,17 @@ ModelData * ImportUtil::Model::TxtLoad(std::basic_string<TCHAR> strFileName)
 	fIn.get(input);
 
 	// Read in the vertex data.
-	for (int i = 0; i < pModelData->nVertexCount; ++i)
+	for (int i = 0; i < nVertexCount; ++i)
 	{
-		fIn >> pArData[i].position.x >> pArData[i].position.y >> pArData[i].position.z;
-		fIn >> pArData[i].uv.x >> pArData[i].uv.y;
-		fIn >> pArData[i].normal.x >> pArData[i].normal.y >> pArData[i].normal.z;
+		VertexData* pVertexData = new VertexData();
+
+		fIn >> pVertexData->position.x >> pVertexData->position.y >> pVertexData->position.z;
+		fIn >> pVertexData->uv.x >> pVertexData->uv.y;
+		fIn >> pVertexData->normal.x >> pVertexData->normal.y >> pVertexData->normal.z;
+
+		pGroup->vtVertexDatas.push_back(pVertexData);
+		pGroup->vtIndexDatas.push_back(i);
 	}
-	
-	pModelData->parVertices = pArData;
 
 	// Close the model file.
 	fIn.close();
@@ -62,16 +80,16 @@ ModelData * ImportUtil::Model::TxtLoad(std::basic_string<TCHAR> strFileName)
 	return pModelData;
 }
 
-ModelData * ImportUtil::Model::FbxLoad(std::basic_string<TCHAR> strFileName)
+ModelData * CModelImporter::FbxLoad(std::basic_string<TCHAR> strFileName)
 {
 	return nullptr;
 }
 
-ModelData * ImportUtil::Model::ObjLoad(std::basic_string<TCHAR> strFileName)
+ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 {
 	FILE* pFile = nullptr;
-	
-	errno_t error = _tfopen_s( &pFile,strFileName.c_str(), _T("r"));
+
+	errno_t error = _tfopen_s(&pFile, strFileName.c_str(), _T("r"));
 
 	if (error != 0)
 	{
@@ -88,14 +106,14 @@ ModelData * ImportUtil::Model::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 		if (strstr(szLine, "mtllib"))
 		{
-			
+
 		}
 	}
 
 	return pModelData;
 }
 
-ModelData * ImportUtil::Model::MD5Load(std::basic_string<TCHAR> strFileName)
+ModelData * CModelImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 {
 	return nullptr;
 }

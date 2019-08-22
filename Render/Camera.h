@@ -10,9 +10,11 @@ public:
 
 	void SetPosition(float x, float y, float z);
 	void SetRotation(float x, float y, float z);
+	void SetPadding(float fPadding);
 
 	DirectX::XMFLOAT3 GetPosition();
 	DirectX::XMFLOAT3 GetRotation();
+	float GetPadding();
 
 	void Update();
 	void GetViewMatrix(DirectX::XMMATRIX&);
@@ -21,4 +23,6 @@ private:
 	DirectX::XMFLOAT3 m_position;
 	DirectX::XMFLOAT3 m_rotation;
 	DirectX::XMMATRIX m_viewMatrix;
+
+	float m_fPadding;
 };

@@ -10,31 +10,33 @@ MaterialData * ImportUtil::LoadMtlFormat(std::basic_string<TCHAR> strFileName)
 	return nullptr;
 }
 
-MaterialData * ImportUtil::CreateMaterialData(int nCount, MaterialData::MaterialInfo * parMaterialInfo)
+MaterialData * ImportUtil::CreateMaterialData(int nCount, std::vector<MaterialData::MaterialInfo*> vtMaterialInfo)
 {
 	if (nCount < 1)
 		return nullptr;
 
 	MaterialData* pData = new MaterialData();
 
-	pData->nMaterialCount = nCount;
-	pData->parMaterialInfo = parMaterialInfo;
+	pData->vtMaterialInfo = vtMaterialInfo;
 
 	return pData;
 }
 
-MaterialData::MaterialInfo ImportUtil::CreateMaterialInfo(DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 specular,
+MaterialData::MaterialInfo* ImportUtil::CreateMaterialInfo( std::basic_string<TCHAR> strName,
+	DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 specular,
 	std::basic_string<TCHAR> strDiffuse, std::basic_string<TCHAR> strNormal, std::basic_string<TCHAR> strSpecular)
 {
-	MaterialData::MaterialInfo info;
+	MaterialData::MaterialInfo* pInfo = new MaterialData::MaterialInfo();
 
-	info.diffuse = diffuse;
-	info.ambient = ambient;
-	info.specular = specular;
+	pInfo->strName = strName;
 
-	info.strDiffuseMap = strDiffuse;
-	info.strNormalMap = strNormal;
-	info.strSpecularMap = strSpecular;
+	pInfo->diffuse = diffuse;
+	pInfo->ambient = ambient;
+	pInfo->specular = specular;
 
-	return info;
+	pInfo->strDiffuseMap = strDiffuse;
+	pInfo->strNormalMap = strNormal;
+	pInfo->strSpecularMap = strSpecular;
+
+	return pInfo;
 }

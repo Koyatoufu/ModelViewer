@@ -12,7 +12,7 @@ CLightModel::~CLightModel()
 
 HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
-	pModelData = ImportUtil::LoadModelData(_T(".\\res\\cube.txt"));
+	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
 
 	if (pModelData == nullptr)
 		return E_FAIL;
@@ -44,8 +44,11 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	HRESULT result;
 	int i;
 
-	m_nVertexCount = pModelData->nVertexCount;
-	m_nIndexCount = pModelData->nIndexCount;
+	if ( pModelData == nullptr || pModelData->vtMeshes.size() < 1 )
+		return E_FAIL;
+
+	m_nVertexCount = pModelData->vtMeshes[0]->vtVertexDatas.size();
+	m_nIndexCount = pModelData->vtMeshes[0]->vtIndexDatas.size();
 
 	// Create the vertex array.
 	vertices = new VertexType[m_nVertexCount];
@@ -55,9 +58,9 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	// Load the vertex array and index array with data.
 	for (i = 0; i < m_nVertexCount; i++)
 	{
-		vertices[i].position = pModelData->parVertices[i].position;
-		vertices[i].UV = pModelData->parVertices[i].uv;
-		vertices[i].normal = pModelData->parVertices[i].normal;
+		vertices[i].position = pModelData->vtMeshes[0]->vtVertexDatas[i]->position;
+		vertices[i].UV = pModelData->vtMeshes[0]->vtVertexDatas[i]->uv;
+		vertices[i].normal = pModelData->vtMeshes[0]->vtVertexDatas[i]->normal;
 
 		indices[i] = i;
 	}
@@ -112,41 +115,73 @@ HRESULT CLightModel::InitMaterial(ID3D11Device * pDevice, ModelData * pModelData
 {
 	bool bModelLoad = false;
 
-	if (pModelData->pMateiralData)
+	if (pModelData->pMaterialData)
 	{
-		if (pModelData->pMateiralData->parMaterialInfo)
+		for (int i = 0; i < pModelData->pMaterialData->vtMaterialInfo.size(); i++)
 		{
-			for (int i = 0; i < pModelData->pMateiralData->nMaterialCount; i++)
+			MaterialData::MaterialInfo* pInfo = pModelData->pMaterialData->vtMaterialInfo[i];
+
+			if (pInfo == nullptr)
+				continue;
+
+			CMaterial* pMaterial = new CMaterial;
+
+			DirectX::XMFLOAT4 ambient = pInfo->ambient;
+			DirectX::XMFLOAT4 diffuse = pInfo->ambient;
+			DirectX::XMFLOAT4 specular = pInfo->ambient;
+
+			pMaterial->Initialize(diffuse, ambient, specular);
+
+			if (pInfo->strDiffuseMap.empty() == false)
 			{
-				MaterialData::MaterialInfo info= pModelData->pMateiralData->parMaterialInfo[i];
-
-				CMaterial* pMaterial = new CMaterial;
-
-				DirectX::XMFLOAT4 ambient = info.ambient;
-				DirectX::XMFLOAT4 diffuse = info.ambient;
-				DirectX::XMFLOAT4 specular = info.ambient;
-
-				pMaterial->Initialize(diffuse, ambient, specular);
-
-				if (info.strDiffuseMap.empty() == false)
-				{
-					pMaterial->AddTexture(pDevice, info.strDiffuseMap);
-				}
-				if (info.strNormalMap.empty() == false)
-				{
-					pMaterial->AddTexture(pDevice, info.strNormalMap,ETEXTURE_NORMAL);
-				}
-				if (info.strSpecularMap.empty() == false)
-				{
-					pMaterial->AddTexture(pDevice, info.strSpecularMap, ETEXTURE_SPECULAR);
-				}
-				
-				m_vecMaterial.push_back(pMaterial);
+				pMaterial->AddTexture(pDevice, pInfo->strDiffuseMap);
+			}
+			if (pInfo->strNormalMap.empty() == false)
+			{
+				pMaterial->AddTexture(pDevice, pInfo->strNormalMap, ETEXTURE_NORMAL);
+			}
+			if (pInfo->strSpecularMap.empty() == false)
+			{
+				pMaterial->AddTexture(pDevice, pInfo->strSpecularMap, ETEXTURE_SPECULAR);
 			}
 
-			if (m_vecMaterial.size() > 0)
-				bModelLoad = true;
+			m_vecMaterial.push_back(pMaterial);
 		}
+
+		if (m_vecMaterial.size() > 0)
+			bModelLoad = true;for (int i = 0; i < pModelData->pMaterialData->vtMaterialInfo.size(); i++)
+		{
+			MaterialData::MaterialInfo* pInfo = pModelData->pMaterialData->vtMaterialInfo[i];
+
+			if (pInfo == nullptr)
+				continue;
+
+			CMaterial* pMaterial = new CMaterial;
+
+			DirectX::XMFLOAT4 ambient = pInfo->ambient;
+			DirectX::XMFLOAT4 diffuse = pInfo->ambient;
+			DirectX::XMFLOAT4 specular = pInfo->ambient;
+
+			pMaterial->Initialize(diffuse, ambient, specular);
+
+			if (pInfo->strDiffuseMap.empty() == false)
+			{
+				pMaterial->AddTexture(pDevice, pInfo->strDiffuseMap);
+			}
+			if (pInfo->strNormalMap.empty() == false)
+			{
+				pMaterial->AddTexture(pDevice, pInfo->strNormalMap, ETEXTURE_NORMAL);
+			}
+			if (pInfo->strSpecularMap.empty() == false)
+			{
+				pMaterial->AddTexture(pDevice, pInfo->strSpecularMap, ETEXTURE_SPECULAR);
+			}
+
+			m_vecMaterial.push_back(pMaterial);
+		}
+
+		if (m_vecMaterial.size() > 0)
+			bModelLoad = true;
 	}
 
 	if (bModelLoad == false)

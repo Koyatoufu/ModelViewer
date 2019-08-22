@@ -159,10 +159,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BaseImporter.h" />
     <ClInclude Include="ImportDefine.h" />
     <ClInclude Include="ImportUtil.h" />
     <ClInclude Include="MaterialImport.h" />
     <ClInclude Include="ModelImport.h" />
+    <ClInclude Include="SingleTon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImportUtil.cpp" />

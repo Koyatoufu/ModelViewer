@@ -164,7 +164,7 @@ HRESULT CTextureShader::Initialize(ID3D11Device * pDevice)
 }
 
 HRESULT CTextureShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, CMaterial* pMaterial,
-	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer)
+	MatrixBufferType* pMatrixBuffer, LightBufferType* pLightBuffer, CameraBufferType* pCameraBuffer)
 {
 	if (pMatrixBuffer == nullptr)
 		return E_FAIL;
