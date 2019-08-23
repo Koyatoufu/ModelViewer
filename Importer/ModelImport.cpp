@@ -1,25 +1,41 @@
-#include "ModelImport.h"
+#include "ModelImporter.h"
 #include "MaterialImport.h"
 
 CModelImporter::CModelImporter()
 {
+	for (int i = 0; i < E_IMPORT_FORMAT_MAX; i++)
+	{
+		m_parModelLoadFuntions[i] = nullptr;
+		m_parModelImpoter[i] = nullptr;
+	}
+
+	m_parModelLoadFuntions[E_IMPORT_FORMAT_TXT] = &CModelImporter::TxtLoad;
+	m_parModelLoadFuntions[E_IMPORT_FORMAT_OBJ] = &CModelImporter::ObjLoad;
+	m_parModelLoadFuntions[E_IMPORT_FORMAT_FBX] = &CModelImporter::FbxLoad;
+	m_parModelLoadFuntions[E_IMPORT_FORMAT_MD5] = &CModelImporter::MD5Load;
+
 }
 
 CModelImporter::~CModelImporter()
 {
 }
 
-void CModelImporter::SetFunctionPointSet()
-{
-	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_TXT] = CModelImporter::TxtLoad;
-	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_OBJ] = CModelImporter::ObjLoad;
-	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_FBX] = CModelImporter::FbxLoad;
-	//CModelImporter::pModelLoadFuntions[E_IMPORT_FORMAT_MD5] = CModelImporter::MD5Load;
-}
-
 ModelData * CModelImporter::LoadModel(std::basic_string<TCHAR> strFileName, E_IMPORT_FORMAT_TYPE eType)
 {
-	return nullptr;
+	if (strFileName.empty())
+		return nullptr;
+
+	if (eType == E_IMPORT_FORMAT_MAX)
+		return nullptr;
+
+	ModelData* pData = nullptr;
+
+	if (m_parModelLoadFuntions[eType])
+	{
+		pData = (this->*m_parModelLoadFuntions[eType])(strFileName);
+	}
+
+	return pData;
 }
 
 ModelData * CModelImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
@@ -74,6 +90,8 @@ ModelData * CModelImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 		pGroup->vtIndexDatas.push_back(i);
 	}
 
+	pModelData->vtMeshes.push_back(pGroup);
+
 	// Close the model file.
 	fIn.close();
 
@@ -82,38 +100,21 @@ ModelData * CModelImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 
 ModelData * CModelImporter::FbxLoad(std::basic_string<TCHAR> strFileName)
 {
-	return nullptr;
+	ModelData* pModelData = nullptr;
+
+	return pModelData;
 }
 
 ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 {
-	FILE* pFile = nullptr;
-
-	errno_t error = _tfopen_s(&pFile, strFileName.c_str(), _T("r"));
-
-	if (error != 0)
-	{
-		return nullptr;
-	}
-
-	ModelData* pModelData = new ModelData();
-
-	char szLine[128] = "";
-
-	while (feof(pFile))
-	{
-		fscanf_s(pFile, "%s", szLine);
-
-		if (strstr(szLine, "mtllib"))
-		{
-
-		}
-	}
+	ModelData* pModelData = nullptr;
 
 	return pModelData;
 }
 
 ModelData * CModelImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 {
-	return nullptr;
+	ModelData* pModelData = nullptr;
+
+	return pModelData;
 }

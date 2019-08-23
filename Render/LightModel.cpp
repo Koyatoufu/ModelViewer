@@ -17,6 +17,8 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 	if (pModelData == nullptr)
 		return E_FAIL;
 
+	m_pModelData = pModelData;
+
 	if(FAILED(InitMaterial(pDevice, pModelData)))
 		return E_FAIL;
 
@@ -188,7 +190,13 @@ HRESULT CLightModel::InitMaterial(ID3D11Device * pDevice, ModelData * pModelData
 	{
 		CMaterial* pMaterial = new CMaterial();
 
+		DirectX::XMFLOAT4 diffuse = DirectX::XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
+		DirectX::XMFLOAT4 ambient = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+		DirectX::XMFLOAT4 specular = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 
+		pMaterial->Initialize(diffuse, ambient, specular);
+
+		pMaterial->AddTexture(pDevice, _T(".\\res\\texture\\seafloor.dds"));
 
 		m_vecMaterial.push_back(pMaterial);
 	}

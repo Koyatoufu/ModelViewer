@@ -174,12 +174,12 @@
     <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\Color.ps" />
-    <None Include="Shader\Color.vs" />
-    <None Include="Shader\light.ps" />
-    <None Include="Shader\light.vs" />
-    <None Include="Shader\texture.ps" />
-    <None Include="Shader\texture.vs" />
+    <None Include="Shader\tutorial\Color.ps" />
+    <None Include="Shader\tutorial\Color.vs" />
+    <None Include="Shader\tutorial\light.ps" />
+    <None Include="Shader\tutorial\light.vs" />
+    <None Include="Shader\tutorial\texture.ps" />
+    <None Include="Shader\tutorial\texture.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

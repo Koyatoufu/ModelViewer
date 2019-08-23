@@ -80,7 +80,8 @@ void CCamera::Update()
 	DirectX::XMVECTOR positionVector = XMLoadFloat3(&position);
 
 	// Setup where the camera is looking by default.
-	DirectX::XMFLOAT3 lookAt = DirectX::XMFLOAT3(0.0f,0.0f,0.0f);
+	//DirectX::XMFLOAT3 lookAt = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	DirectX::XMFLOAT3 lookAt = DirectX::XMFLOAT3(0.0f,0.0f,1.0f);
 
 	// Load it into a XMVECTOR structure.
 	DirectX::XMVECTOR lookAtVector = XMLoadFloat3(&lookAt);

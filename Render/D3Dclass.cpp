@@ -337,7 +337,7 @@ void CD3DClass::Shutdown()
 
 void CD3DClass::BeginScene(float red, float green, float blue, float alpha)
 {
-	float color[4] = { 0.0f,0.0f,1.0f,1.0f };
+	float color[4] = { red, green, blue, alpha };
 
 	// Clear the back buffer.
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);

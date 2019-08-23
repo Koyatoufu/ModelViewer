@@ -9,7 +9,6 @@ private:
 		DirectX::XMFLOAT3 position;
 		DirectX::XMFLOAT2 UV;
 		DirectX::XMFLOAT3 normal;
-		int nMaterialIdx;
 	};
 public:
 	CLightModel();

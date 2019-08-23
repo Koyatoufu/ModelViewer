@@ -40,6 +40,17 @@ struct VertexGroup
 	std::vector<int> vtIndexDatas;
 
 	int nMaterialIdx;
+
+	VertexGroup():nMaterialIdx(0) {}
+	~VertexGroup()
+	{
+		for (int i = 0; i < vtVertexDatas.size(); ++i)
+		{
+			SAFE_DELETE(vtVertexDatas[i]);
+		}
+
+		vtVertexDatas.clear();
+	}
 };
 
 struct MaterialData
@@ -69,6 +80,12 @@ struct ModelData
 	ModelData() :bSkinned(false), pMaterialData(nullptr){}
 	~ModelData()
 	{
+		for (int i = 0; i < vtMeshes.size(); ++i)
+		{
+			SAFE_DELETE(vtMeshes[i]);
+		}
+		vtMeshes.clear();
+
 		SAFE_DELETE(pMaterialData);
 	}
 };

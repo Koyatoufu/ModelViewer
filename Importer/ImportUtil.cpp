@@ -1,13 +1,13 @@
 #include "ImportUtil.h"
-#include "ModelImport.h"
+#include "ModelImporter.h"
 
 CImportUtil::CImportUtil()
 {
-
+	m_pModelImporter = new CModelImporter();
 }
 CImportUtil::~CImportUtil()
 {
-
+	SAFE_DELETE(m_pModelImporter);
 }
 
 DirectX::ScratchImage CImportUtil::LoadTextureFromFile(std::basic_string<TCHAR> strFileName)
@@ -53,6 +53,11 @@ ModelData* CImportUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
 		return nullptr;
 
 	ModelData* pModelData = nullptr;
+
+	if (m_pModelImporter)
+	{
+		pModelData = m_pModelImporter->LoadModel(strFileName, eImportFormat);
+	}
 
 	return pModelData;
 }

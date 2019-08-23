@@ -12,6 +12,9 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{b5b50d4d-e2f1-4c31-b5f7-5e28de4b4c90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\tutorial">
+      <UniqueIdentifier>{ade5fb1b-6480-44ca-a0a9-f89059965726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -39,23 +42,23 @@
     <ResourceCompile Include="Viewer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\Color.ps">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\Color.ps">
+      <Filter>Shader\tutorial</Filter>
     </None>
-    <None Include="Shader\Color.vs">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\Color.vs">
+      <Filter>Shader\tutorial</Filter>
     </None>
-    <None Include="Shader\texture.ps">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\light.ps">
+      <Filter>Shader\tutorial</Filter>
     </None>
-    <None Include="Shader\texture.vs">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\light.vs">
+      <Filter>Shader\tutorial</Filter>
     </None>
-    <None Include="Shader\light.ps">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\texture.ps">
+      <Filter>Shader\tutorial</Filter>
     </None>
-    <None Include="Shader\light.vs">
-      <Filter>Shader</Filter>
+    <None Include="Shader\tutorial\texture.vs">
+      <Filter>Shader\tutorial</Filter>
     </None>
   </ItemGroup>
 </Project>

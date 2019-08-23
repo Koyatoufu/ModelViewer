@@ -20,6 +20,8 @@ CRenderer::CRenderer():
 	m_pTestModel(NULL)
 {
 	CImportUtil::CreateInstance();
+
+	m_fTestRotation = 0.0f;
 }
 
 CRenderer::~CRenderer()
@@ -44,14 +46,14 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 	ID3D11Device* pDevice = m_pD3D->GetDevice();
 
 	m_pCamera = new CCamera();
-	m_pCamera->SetPosition(0.f, 0.f, -10.f);
+	m_pCamera->SetPosition(0.0f, 5.0f, -10.0f);
 
 	m_pLight = new CLight();
 	m_pLight->SetDirection(0.0f, -1.0f, 1.0f);
-	m_pLight->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
-	m_pLight->SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_pLight->SetSpecularColor(0.5f, 0.5f, 0.5f, 1.0f);
-	m_pLight->SetSpecularPower(0.5f);
+	m_pLight->SetDiffuseColor(0.5f, 0.5f, 0.5f, 1.0f);
+	m_pLight->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_pLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_pLight->SetSpecularPower(32.0f);
 
 	//m_pTestModel = new CTextureModel();
 	m_pTestModel = new CLightModel();
@@ -72,6 +74,13 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 
 void CRenderer::Update()
 {
+	m_fTestRotation += DirectX::XM_PI * 0.05f;
+
+	if (m_fTestRotation > 360.0f)
+	{
+		m_fTestRotation -= 360.f;
+	}
+
 	m_pCamera->Update();
 }
 
@@ -86,6 +95,9 @@ void CRenderer::Render()
 	m_pCamera->GetViewMatrix(matrixBuffer.view);
 	m_pD3D->GetProjectionMatrix(matrixBuffer.projection);
 	
+	XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
+	matrixBuffer.world = matrixBuffer.world * matRot;
+
 	m_pTestModel->Render(pDeviceContext);
 
 	CMaterial* pMaterial = m_pTestModel->GetMaterial();
@@ -109,9 +121,9 @@ void CRenderer::Render()
 	}
 
 	if(m_pTestModel->IsInstceUse() == false)
-		m_pTestShader->Render(pDeviceContext, m_pTestModel->GetIndexCount(), pMaterial, &matrixBuffer, &lightBuffer);
+		m_pTestShader->Render(pDeviceContext, m_pTestModel->GetIndexCount(), pMaterial, &matrixBuffer, &lightBuffer, &cameraBuffer);
 	else
-		m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(),m_pTestModel->GetInstanceCount(), pMaterial, &matrixBuffer, &lightBuffer);
+		m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(),m_pTestModel->GetInstanceCount(), pMaterial, &matrixBuffer, &lightBuffer, &cameraBuffer);
 	
 	m_pD3D->EndScene();
 }

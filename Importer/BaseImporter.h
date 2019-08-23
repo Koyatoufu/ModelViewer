@@ -1,15 +1,16 @@
 #pragma once
 #include "ImportDefine.h"
 
-class CBaseImporter
+class IBaseImporter
 {
 public:
-	CBaseImporter();
-	virtual ~CBaseImporter();
+	IBaseImporter() {}
+	virtual ~IBaseImporter() {}
 
-	virtual ModelData* ReadFile();
+	virtual bool CanReadFile() = 0;
+	virtual ModelData* ReadFile() = 0;
 
 
-protected:
-	CBaseImporter(CBaseImporter&) {}
+private:
+	IBaseImporter(IBaseImporter&) {}
 };

@@ -31,7 +31,7 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 	pixelShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	std::wstring strFileName = L".\\shader\\color.vs";
+	std::wstring strFileName = L".\\shader\\tutorial\\color.vs";
 
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ColorVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS,
 		0, &vertexShaderBuffer, &errorMessage)))
@@ -49,7 +49,7 @@ HRESULT CColorShader::Initialize(ID3D11Device* device)
 		return E_FAIL;
 	}
 
-	strFileName = L".\\shader\\color.ps";
+	strFileName = L".\\shader\\tutorial\\color.ps";
 
 	// Compile the pixel shader code.
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "ColorPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS,

@@ -23,7 +23,7 @@ HRESULT CTextureShader::Initialize(ID3D11Device * pDevice)
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
 
-	std::wstring strFileName = L".\\shader\\texture.vs";
+	std::wstring strFileName = L".\\shader\\tutorial\\texture.vs";
 
 	// Compile the vertex shader code.
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "TextureVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
@@ -43,7 +43,7 @@ HRESULT CTextureShader::Initialize(ID3D11Device * pDevice)
 		return E_FAIL;
 	}
 
-	strFileName = L".\\shader\\texture.ps";
+	strFileName = L".\\shader\\tutorial\\texture.ps";
 
 	// Compile the pixel shader code.
 	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "TexturePixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,

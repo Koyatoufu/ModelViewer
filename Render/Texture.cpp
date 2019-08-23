@@ -24,6 +24,9 @@ HRESULT CTexture::Initiazlie(ID3D11Device * pDevice, std::basic_string<TCHAR> st
 	if (FAILED(DirectX::CreateShaderResourceView(pDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &m_pTextureView)))
 		return E_FAIL;
 
+	// Generate mipmaps for this texture.
+	//pDeviceContext->GenerateMips(m_pTextureView);
+
 	return S_OK;
 }
 

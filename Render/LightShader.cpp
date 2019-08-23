@@ -28,10 +28,10 @@ HRESULT CLightShader::Initialize(ID3D11Device * pDevice)
 	vertexShaderBuffer = 0;
 	pixelShaderBuffer = 0;
 
-	std::wstring strFileName = L".\\shader\\texture.vs";
+	std::wstring strFileName = L".\\shader\\tutorial\\light.vs";
 
 	// Compile the vertex shader code.
-	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "TextureVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&vertexShaderBuffer, &errorMessage)))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -48,10 +48,10 @@ HRESULT CLightShader::Initialize(ID3D11Device * pDevice)
 		return E_FAIL;
 	}
 
-	strFileName = L".\\shader\\texture.ps";
+	strFileName = L".\\shader\\tutorial\\light.ps";
 
 	// Compile the pixel shader code.
-	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "TexturePixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
+	if (FAILED(D3DCompileFromFile(strFileName.c_str(), NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
 		&pixelShaderBuffer, &errorMessage)))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -200,13 +200,14 @@ HRESULT CLightShader::Initialize(ID3D11Device * pDevice)
 HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, CMaterial * pMaterial,
 	MatrixBufferType * pMatrixBuffer, LightBufferType * pLightBuffer, CameraBufferType* pCameraBuffer)
 {
-	HRESULT result;
+	if (!pMatrixBuffer || !pLightBuffer || !pCameraBuffer)
+		return E_FAIL;
+
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr = nullptr;
 	LightBufferType* dataPtr2 = nullptr;
 	CameraBufferType* dataPtr3 = nullptr;
-
 
 	// Transpose the matrices to prepare them for the shader.
 	pMatrixBuffer->world = XMMatrixTranspose(pMatrixBuffer->world);
@@ -214,8 +215,7 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 	pMatrixBuffer->projection = XMMatrixTranspose(pMatrixBuffer->projection);
 
 	// Lock the constant buffer so it can be written to.
-	result = pDeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
+	if (FAILED(pDeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 	{
 		return E_FAIL;
 	}
@@ -238,8 +238,7 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 	pDeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_pMatrixBuffer);
 
 	// Lock the camera constant buffer so it can be written to.
-	result = pDeviceContext->Map(m_pCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
+	if (FAILED(pDeviceContext->Map(m_pCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 	{
 		return E_FAIL;
 	}
@@ -269,8 +268,7 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 	}
 
 	// Lock the light constant buffer so it can be written to.
-	result = pDeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
+	if (FAILED(pDeviceContext->Map(m_pLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 	{
 		return E_FAIL;
 	}

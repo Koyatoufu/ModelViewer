@@ -2,9 +2,13 @@
 #include "ImportDefine.h"
 #include "SingleTon.h"
 
+class CModelImporter;
+
 class CImportUtil:public CSingleTonT<CImportUtil>
 {
 	friend CSingleTonT;
+
+	CModelImporter* m_pModelImporter;
 protected:
 	CImportUtil();
 	virtual ~CImportUtil();

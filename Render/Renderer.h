@@ -26,6 +26,8 @@ private:
 
 	CD3DClass* m_pD3D;
 
+	float m_fTestRotation;
+
 private:
 	CRenderer(CRenderer&) {};
 
