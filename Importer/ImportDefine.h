@@ -36,21 +36,20 @@ struct VertexData
 
 struct VertexGroup
 {
-	std::vector<VertexData*> vtVertexDatas;
-	std::vector<int> vtIndexDatas;
+	std::vector<DirectX::XMFLOAT3> vtPositions;
+	std::vector<DirectX::XMFLOAT2> vtUVs;
+	std::vector<DirectX::XMFLOAT3> vtNormals;
+	std::vector<unsigned int> vtIndexDatas;
+	std::vector<unsigned int> vtUVIndexDatas;
+	std::vector<unsigned int> vtNormalIndexDatas;
+
+	std::basic_string<TCHAR> strGroupName;
+	std::basic_string<TCHAR> strMtlName;
 
 	int nMaterialIdx;
 
 	VertexGroup():nMaterialIdx(0) {}
-	~VertexGroup()
-	{
-		for (int i = 0; i < vtVertexDatas.size(); ++i)
-		{
-			SAFE_DELETE(vtVertexDatas[i]);
-		}
-
-		vtVertexDatas.clear();
-	}
+	~VertexGroup() {}
 };
 
 struct MaterialData

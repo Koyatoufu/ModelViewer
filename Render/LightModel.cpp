@@ -19,6 +19,8 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 
 	m_pModelData = pModelData;
 
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\"));
+
 	if(FAILED(InitMaterial(pDevice, pModelData)))
 		return E_FAIL;
 
@@ -49,8 +51,16 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	if ( pModelData == nullptr || pModelData->vtMeshes.size() < 1 )
 		return E_FAIL;
 
-	m_nVertexCount = pModelData->vtMeshes[0]->vtVertexDatas.size();
+	m_nVertexCount = pModelData->vtMeshes[0]->vtPositions.size();
 	m_nIndexCount = pModelData->vtMeshes[0]->vtIndexDatas.size();
+
+	if (pModelData->vtMeshes[0]->vtPositions.size() != m_nVertexCount ||
+		pModelData->vtMeshes[0]->vtUVs.size() != m_nVertexCount ||
+		pModelData->vtMeshes[0]->vtNormals.size() != m_nVertexCount)
+		return E_FAIL;
+
+	if (pModelData->vtMeshes[0]->vtIndexDatas.size() < 1)
+		return E_FAIL;
 
 	// Create the vertex array.
 	vertices = new VertexType[m_nVertexCount];
@@ -60,11 +70,14 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	// Load the vertex array and index array with data.
 	for (i = 0; i < m_nVertexCount; i++)
 	{
-		vertices[i].position = pModelData->vtMeshes[0]->vtVertexDatas[i]->position;
-		vertices[i].UV = pModelData->vtMeshes[0]->vtVertexDatas[i]->uv;
-		vertices[i].normal = pModelData->vtMeshes[0]->vtVertexDatas[i]->normal;
+		vertices[i].position = pModelData->vtMeshes[0]->vtPositions[i];
+		vertices[i].UV = pModelData->vtMeshes[0]->vtUVs[i];
+		vertices[i].normal = pModelData->vtMeshes[0]->vtNormals[i];
+	}
 
-		indices[i] = i;
+	for (i = 0; i < m_nIndexCount; i++)
+	{
+		indices[i] = pModelData->vtMeshes[0]->vtIndexDatas[i];
 	}
 
 	// Set up the description of the static vertex buffer.

@@ -1,10 +1,10 @@
 #pragma once
-#include "Texture.h"
+#include "RenderDefine.h"
 
 class CMaterial
 {
 private:
-	CTexture* m_pArrTexture[ETextureType::ETEXTURE_MAX]; // ETextureType 배열
+	ID3D11ShaderResourceView* m_pArrTextureView[ETextureType::ETEXTURE_MAX]; // ETextureType 배열
 
 	DirectX::XMFLOAT4 m_diffuseColor;
 	DirectX::XMFLOAT4 m_ambientColor;
@@ -18,7 +18,7 @@ public:
 
 	HRESULT AddTexture(ID3D11Device* pDevice, std::basic_string<TCHAR> strTexFileName, ETextureType eTextureType = ETEXTURE_DIFFUSE);
 
-	CTexture* GetTexture(ETextureType eTextureType = ETEXTURE_DIFFUSE) { return m_pArrTexture[eTextureType]; }
+	ID3D11ShaderResourceView* GetTextureView(ETextureType eTextureType = ETEXTURE_DIFFUSE) { return m_pArrTextureView[eTextureType]; }
 
 	DirectX::XMFLOAT4 GetDiffuseColor() { return m_diffuseColor; }
 	void SetDiffuseColor(float r, float g, float b, float a = 1.f);
@@ -28,5 +28,6 @@ public:
 
 	DirectX::XMFLOAT4 GetSpecularColor() { return m_specularColor; }
 	void SetSpecularColor(float r, float g, float b, float a = 1.f);
-
+private:
+	ID3D11ShaderResourceView* LoadTextureView(ID3D11Device* pDevice, std::basic_string<TCHAR> strTexFileName);
 };

@@ -176,7 +176,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkeletalModel.h" />
     <ClInclude Include="StaticModel.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureModel.h" />
     <ClInclude Include="TextureShader.h" />
   </ItemGroup>
@@ -193,7 +192,6 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StaticModel.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureModel.cpp" />
     <ClCompile Include="TextureShader.cpp" />
   </ItemGroup>

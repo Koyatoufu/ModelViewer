@@ -199,10 +199,9 @@ HRESULT CTextureShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext,
 	// Finanly set the constant buffer in the vertex shader with the updated values.
 	pDeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_pMatrixBuffer);
 
-	if (pMaterial && pMaterial->GetTexture())
+	if (pMaterial && pMaterial->GetTextureView())
 	{
-		CTexture* pTexture = pMaterial->GetTexture();
-		ID3D11ShaderResourceView* pTextureView = pTexture->GetTextureView();
+		ID3D11ShaderResourceView* pTextureView = pMaterial->GetTextureView();
 
 		if (pTextureView)
 		{

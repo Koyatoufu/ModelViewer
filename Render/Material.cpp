@@ -1,12 +1,12 @@
 #include "Material.h"
 
-#include "RenderDefine.h"
+#include "ImportUtil.h"
 
 CMaterial::CMaterial()
 {
 	for (int i = 0; i < ETEXTURE_MAX; i++)
 	{
-		m_pArrTexture[i] = nullptr;
+		m_pArrTextureView[i] = nullptr;
 	}
 }
 
@@ -14,7 +14,7 @@ CMaterial::~CMaterial()
 {
 	for (int i = 0 ; i < ETEXTURE_MAX; i++)
 	{
-		SAFE_DELETE(m_pArrTexture[i]);
+		SAFE_RELEASE_D3DCONTENTS(m_pArrTextureView[i]);
 	}
 }
 
@@ -38,16 +38,14 @@ HRESULT CMaterial::AddTexture(ID3D11Device* pDevice, std::basic_string<TCHAR> st
 	if (eTextureType == ETEXTURE_MAX)
 		return E_FAIL;
 
-	if (m_pArrTexture[eTextureType] != nullptr)
+	if (m_pArrTextureView[eTextureType] != nullptr)
 	{
-		SAFE_DELETE(m_pArrTexture[eTextureType]);
+		SAFE_DELETE(m_pArrTextureView[eTextureType]);
 	}
 
-	CTexture* pTexture = new CTexture();
-	if (FAILED(pTexture->Initiazlie(pDevice, strTexFileName)))
-		E_FAIL;
+	ID3D11ShaderResourceView* pTextureView = LoadTextureView(pDevice, strTexFileName);
 
-	m_pArrTexture[eTextureType] = pTexture;
+	m_pArrTextureView[eTextureType] = pTextureView;
 
 	return S_OK;
 }
@@ -74,4 +72,26 @@ void CMaterial::SetSpecularColor(float r, float g, float b, float a)
 	m_specularColor.y = g;
 	m_specularColor.z = b;
 	m_specularColor.w = a;
+}
+
+ID3D11ShaderResourceView * CMaterial::LoadTextureView(ID3D11Device * pDevice, std::basic_string<TCHAR> strTexFileName)
+{
+	if (pDevice == nullptr)
+		return nullptr;
+
+	if (strTexFileName.empty())
+		return nullptr;
+
+	ID3D11ShaderResourceView* pTextureVIew = nullptr;
+
+	DirectX::ScratchImage image = CImportUtil::GetInstance()->LoadTextureFromFile(strTexFileName);
+
+	if (FAILED(DirectX::CreateShaderResourceView(pDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &pTextureVIew)))
+	{
+		SAFE_RELEASE_D3DCONTENTS(pTextureVIew);
+
+		return nullptr;
+	}
+
+	return pTextureVIew;
 }

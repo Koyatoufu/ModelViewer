@@ -259,9 +259,9 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 	// Now set the camera constant buffer in the vertex shader with the updated values.
 	pDeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_pCameraBuffer);
 
-	if (pMaterial && pMaterial->GetTexture() && pMaterial->GetTexture()->GetTextureView())
+	if (pMaterial && pMaterial->GetTextureView() && pMaterial->GetTextureView())
 	{
-		ID3D11ShaderResourceView* pTextureView = pMaterial->GetTexture()->GetTextureView();
+		ID3D11ShaderResourceView* pTextureView = pMaterial->GetTextureView();
 
 		// Set shader texture resource in the pixel shader.
 		pDeviceContext->PSSetShaderResources(0, 1, &pTextureView);
