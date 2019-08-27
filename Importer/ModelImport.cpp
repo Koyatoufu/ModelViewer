@@ -124,19 +124,17 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 	if (error)
 		return nullptr;
 	
-	int nRes = 1;
-
-	TCHAR szMtlName[128] = {};
+	TCHAR szMtlName[256] = {};
 
 	pModelData = new ModelData();
 
 	VertexGroup* pGroup = nullptr;
 
-	while (nRes != EOF)
+	while (true)
 	{
-		TCHAR szLineHeader[128] = {};
+		TCHAR szLineHeader[256] = {};
 
-		nRes = _ftscanf_s(pFIle, _T("%s"), szLineHeader);
+		int nRes = _ftscanf_s(pFIle, _T("%s"), szLineHeader,256);
 
 		if (nRes == EOF)
 		{
@@ -145,31 +143,29 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			break;
 		}
 
-		if (_tcscmp(szLineHeader, _T("mtllib")))
+		if (_tcscmp(szLineHeader, _T("mtllib")) == 0)
 		{
-			_ftscanf_s(pFIle, _T("%s"), szMtlName);
-
-			MessageBox(NULL, szMtlName, _T("Material Load Test"), MB_OK);
+			_ftscanf_s(pFIle, _T("%s"), szMtlName,256);
 		}
-		//else if (_tcscmp(szLineHeader, _T("o")))
-		//{
-		//	if (pGroup == nullptr)
-		//	{
-		//		pGroup = new VertexGroup();
-		//	}
-		//	else
-		//	{
-		//		pModelData->vtMeshes.push_back(pGroup);
-		//		pGroup = new VertexGroup();
-		//	}
+		else if (_tcscmp(szLineHeader, _T("o")) == 0)
+		{
+			if (pGroup == nullptr)
+			{
+				pGroup = new VertexGroup();
+			}
+			else
+			{
+				pModelData->vtMeshes.push_back(pGroup);
+				pGroup = new VertexGroup();
+			}
 
-		//	TCHAR szGroupName[128] = {};
+			TCHAR szGroupName[128] = {};
 
-		//	_ftscanf_s(pFIle, _T("%s"),szGroupName);
+			_ftscanf_s(pFIle, _T("%s"),szGroupName,128);
 
-		//	pGroup->strGroupName = szGroupName;
-		//}
-		else if (_tcscmp(szLineHeader, _T("v")))
+			pGroup->strGroupName = szGroupName;
+		}
+		else if (_tcscmp(szLineHeader, _T("v")) == 0)
 		{
 			if (pGroup)
 			{
@@ -178,7 +174,7 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 				pGroup->vtPositions.push_back(position);
 			}
 		}
-		else if (_tcscmp(szLineHeader, _T("vt")))
+		else if (_tcscmp(szLineHeader, _T("vt")) == 0)
 		{
 			if (pGroup)
 			{
@@ -187,16 +183,16 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 				pGroup->vtUVs.push_back(UV);
 			}
 		}
-		else if (_tcscmp(szLineHeader, _T("vn")))
+		else if (_tcscmp(szLineHeader, _T("vn")) == 0)
 		{
 			if (pGroup)
 			{
 				DirectX::XMFLOAT3 normal;
 				_ftscanf_s(pFIle, _T("%f %f %f\n"), &normal.x, &normal.y, &normal.z);
-				pGroup->vtPositions.push_back(normal);
+				pGroup->vtNormals.push_back(normal);
 			}
 		}
-		else if (_tcscmp(szLineHeader, _T("f")))
+		else if (_tcscmp(szLineHeader, _T("f")) == 0)
 		{
 			if (pGroup)
 			{
@@ -220,13 +216,13 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 				}
 			}
 		}
-		else if (_tcscmp(szLineHeader, _T("usemtl")))
+		else if (_tcscmp(szLineHeader, _T("usemtl")) == 0)
 		{
 			if (pGroup)
 			{
 				TCHAR szMtlName[128];
 
-				_ftscanf_s(pFIle, _T("%s"), szMtlName);
+				_ftscanf_s(pFIle, _T("%s"), szMtlName,128);
 				pGroup->strMtlName = szMtlName;
 			}
 		}
@@ -235,6 +231,11 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 	if (pGroup == nullptr)
 	{
 		SAFE_DELETE(pModelData);
+	}
+
+	if (_tcslen(szMtlName) > 0)
+	{
+		MessageBox(NULL, szMtlName, _T("머테리얼 이름 확인"), MB_OK);
 	}
 
 	return pModelData;

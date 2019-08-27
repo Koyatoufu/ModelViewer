@@ -4,38 +4,43 @@
 #include "ImportDefine.h"
 
 CBaseModel::CBaseModel():
-	m_pVertexBuffer(nullptr),
-	m_pIndexBuffer(nullptr),
-	m_nVertexCount(0),
-	m_nIndexCount(0),
-	m_pInstanceBuffer(nullptr),
-	m_nInstanceCount(0),
-	m_bInstnceUse(false),
+	m_pShader(nullptr),
 	m_pModelData(nullptr)
 {
 }
 
 CBaseModel::~CBaseModel()
 {
-	SAFE_RELEASE_D3DCONTENTS(m_pVertexBuffer);
-	SAFE_RELEASE_D3DCONTENTS(m_pIndexBuffer);
-	SAFE_RELEASE_D3DCONTENTS(m_pInstanceBuffer);
-
 	SAFE_DELETE(m_pModelData);
+	SAFE_DELETE(m_pShader);
 
-	for (size_t i = 0; i < m_vecMaterial.size(); ++i)
-		SAFE_DELETE(m_vecMaterial[i]);
+	for (size_t i = 0; i < m_vtSubsets.size(); ++i)
+		SAFE_DELETE(m_vtSubsets[i]);
+
+	for (size_t i = 0; i < m_vtMaterial.size(); ++i)
+		SAFE_DELETE(m_vtMaterial[i]);
 }
 
 CMaterial * CBaseModel::GetMaterial(int nIndex)
 {
-	if( m_vecMaterial.size() < 1 )
+	if( m_vtMaterial.size() < 1 )
 		return nullptr;
 
-	if (nIndex >= m_vecMaterial.size())
-		return m_vecMaterial[m_vecMaterial.size() - 1];
+	if (nIndex >= m_vtMaterial.size() || nIndex < 0)
+		return m_vtMaterial[m_vtMaterial.size() - 1];
 
-	return m_vecMaterial[nIndex];
+	return m_vtMaterial[nIndex];
+}
+
+ModelSubsets * CBaseModel::GetSubSets(int nIndex)
+{
+	if (m_vtSubsets.size() < 1)
+		return nullptr;
+
+	if (nIndex >= m_vtSubsets.size() || nIndex < 0)
+		return nullptr;
+
+	return m_vtSubsets[nIndex];
 }
 
 void CBaseModel::SetPosition(float x, float y, float z)

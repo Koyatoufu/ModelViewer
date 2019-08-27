@@ -3,8 +3,6 @@
 #include "D3Dclass.h"
 #include "TextureModel.h"
 #include "TextureShader.h"
-#include "ColorModel.h"
-#include "ColorShader.h"
 #include "LightModel.h"
 #include "LightShader.h"
 #include "Camera.h"
@@ -12,16 +10,15 @@
 #include "ImportUtil.h"
 
 CRenderer::CRenderer():
-	m_hWnd(NULL),
-	m_pD3D(NULL),
+	m_hWnd(nullptr),
+	m_pD3D(nullptr),
 	m_bVsyncEnabled(false),
 	m_nVideoCardMemory(0),
-	m_pCamera(NULL),
-	m_pTestModel(NULL)
+	m_pCamera(nullptr),
+	m_pTestModel(nullptr),
+	m_pTestShader(nullptr)
 {
 	CImportUtil::CreateInstance();
-
-	m_fTestRotation = 0.0f;
 }
 
 CRenderer::~CRenderer()
@@ -29,6 +26,9 @@ CRenderer::~CRenderer()
 	CImportUtil::ReleaseInstnace();
 
 	SAFE_DELETE(m_pTestShader);
+
+	m_pTestModel->setShader(nullptr);
+
 	SAFE_DELETE(m_pTestModel);
 	SAFE_DELETE(m_pLight);
 	SAFE_DELETE(m_pCamera);
@@ -55,32 +55,27 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 	m_pLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_pLight->SetSpecularPower(32.0f);
 
-	//m_pTestModel = new CTextureModel();
-	m_pTestModel = new CLightModel();
+	m_pTestModel = new CTextureModel();
+	//m_pTestModel = new CLightModel();
 	if (FAILED(m_pTestModel->Initialize(pDevice,nullptr)))
 	{
 		return E_FAIL;
 	}
 
-	//m_pTestShader = new CTextureShader();
-	m_pTestShader = new CLightShader();
+	m_pTestShader = new CTextureShader();
+	//m_pTestShader = new CLightShader();
 	if (FAILED(m_pTestShader->Initialize(pDevice)))
 	{
 		return E_FAIL;
 	}
+
+	m_pTestModel->setShader(m_pTestShader);
 
 	return S_OK;
 }
 
 void CRenderer::Update()
 {
-	m_fTestRotation += DirectX::XM_PI * 0.05f;
-
-	if (m_fTestRotation > 360.0f)
-	{
-		m_fTestRotation -= 360.f;
-	}
-
 	m_pCamera->Update();
 }
 
@@ -95,13 +90,6 @@ void CRenderer::Render()
 	m_pCamera->GetViewMatrix(matrixBuffer.view);
 	m_pD3D->GetProjectionMatrix(matrixBuffer.projection);
 	
-	XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
-	matrixBuffer.world = matrixBuffer.world * matRot;
-
-	m_pTestModel->Render(pDeviceContext);
-
-	CMaterial* pMaterial = m_pTestModel->GetMaterial();
-
 	LightBufferType lightBuffer;
 
 	if (m_pLight)
@@ -120,10 +108,8 @@ void CRenderer::Render()
 		cameraBuffer.padding = m_pCamera->GetPadding();
 	}
 
-	if(m_pTestModel->IsInstceUse() == false)
-		m_pTestShader->Render(pDeviceContext, m_pTestModel->GetIndexCount(), pMaterial, &matrixBuffer, &lightBuffer, &cameraBuffer);
-	else
-		m_pTestShader->Render(pDeviceContext,m_pTestModel->GetIndexCount(),m_pTestModel->GetInstanceCount(), pMaterial, &matrixBuffer, &lightBuffer, &cameraBuffer);
-	
+	if(m_pTestModel)
+		m_pTestModel->Render(pDeviceContext,&matrixBuffer,&lightBuffer,&cameraBuffer);
+
 	m_pD3D->EndScene();
 }

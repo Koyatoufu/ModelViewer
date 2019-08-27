@@ -3,25 +3,19 @@
 
 class CMaterial;
 struct ModelData;
-//class CShader;
+class CShader;
 
 class CBaseModel
 {
 protected:
-	ID3D11Buffer* m_pVertexBuffer;
-	ID3D11Buffer* m_pIndexBuffer;
-	int m_nVertexCount;
-	int m_nIndexCount;
+	std::vector<ModelSubsets*> m_vtSubsets;
 
-	ID3D11Buffer* m_pInstanceBuffer;
-	int m_nInstanceCount;
-
-	std::vector<CMaterial*> m_vecMaterial;
+	std::vector<CMaterial*> m_vtMaterial;
 	ModelData* m_pModelData;
 
-	DirectX::XMFLOAT3 m_vecPosition;
+	CShader* m_pShader;
 
-	bool m_bInstnceUse;
+	DirectX::XMFLOAT3 m_vecPosition;
 public:
 	CBaseModel();
 	virtual ~CBaseModel();
@@ -29,20 +23,20 @@ public:
 	virtual HRESULT Initialize( ID3D11Device* pDevice, ModelData * pModelData ) = 0;
 
 	virtual void Update() = 0;
-	virtual void Render(ID3D11DeviceContext* pDeviceContext) = 0;
+	virtual void Render(ID3D11DeviceContext* pDeviceContext, MatrixBufferType* pMatrixBuffer = nullptr, LightBufferType* pLightBuffer = nullptr, CameraBufferType* pCameraBuffer = nullptr) = 0;
 
 	CMaterial* GetMaterial(int nIndex = 0);
 
-	int	GetVertexCount() const { return m_nVertexCount; };
-	int	GetIndexCount() const { return m_nIndexCount; };
-	int GetInstanceCount() { return m_nInstanceCount; }
+	ModelSubsets* GetSubSets(int nIndex = 0);
 
 	DirectX::XMFLOAT3 GetPosition() { return m_vecPosition; }
 	void SetPosition(float x, float y, float z);
 
-	bool IsInstceUse() { return m_bInstnceUse; }
+	void setShader(CShader* pShader) { m_pShader = pShader; }
 
 protected:
 	virtual HRESULT InitBuffers(ID3D11Device* pDevice , ModelData* pModelData) = 0;
 	virtual HRESULT InitMaterial(ID3D11Device * pDevice, ModelData* pModelData) = 0;
+
+	virtual void RenderBuffers(ID3D11DeviceContext* pDeviceContext) = 0;
 };

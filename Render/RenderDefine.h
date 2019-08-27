@@ -22,13 +22,6 @@
 #define SAFE_DELETE_ARRAY(pointArray) { if(pointArray){ delete [] pointArray; pointArray = nullptr; } }
 #define SAFE_RELEASE_D3DCONTENTS( pContents ) { if(pContents){ pContents->Release(); pContents = nullptr; } }
 
-//struct VertexType
-//{
-//	DirectX::XMFLOAT3 position;
-//	DirectX::XMFLOAT2 UV;
-//	DirectX::XMFLOAT3 normal;
-//};
-
 struct MatrixBufferType
 {
 	DirectX::XMMATRIX world;
@@ -62,3 +55,61 @@ enum ETextureType
 	ETEXTURE_MAX
 };
 
+struct VertexType
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 UV;
+	DirectX::XMFLOAT3 normal;
+
+	DirectX::XMFLOAT3 tangent;
+	DirectX::XMFLOAT3 biTangent;
+
+	int nStartWeight;
+	int nWeightCount;
+
+	VertexType(): 
+		position(0.0f, 0.0f, 0.0f),UV(0.0f, 0.0f),normal(0.0f, 0.0f, 0.0f),
+		tangent(0.0f, 0.0f, 0.0f),biTangent(0.0f, 0.0f, 0.0f), 
+		nStartWeight(0),nWeightCount(0) {}
+};
+
+struct JointType
+{
+	std::basic_string<TCHAR> strName;
+	int nParentID;
+
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT4 orientation;
+
+	JointType() : nParentID(0),position(0.0f,0.0f,0.0f),orientation(0.0f,0.0f,0.0f,1.0f){}
+};
+
+struct WeightType
+{
+	int nJointID;
+	float fBias;
+	DirectX::XMFLOAT3 position;
+
+	WeightType() : nJointID(0),fBias(0.0f),position(0.0f,0.0f,0.0f){}
+};
+
+struct ModelSubsets
+{
+	int nNumTriangles;
+	int nTexArrayIndex;
+
+	std::vector<VertexType> vtVertices;
+	std::vector<DWORD>		vtIndices;
+	std::vector<WeightType>		vtWeights;
+	
+	ID3D11Buffer* pVertexBuffer;
+	ID3D11Buffer* pIndexBuffer;
+
+	ModelSubsets() : nNumTriangles(0), nTexArrayIndex(0), pVertexBuffer(nullptr), pIndexBuffer(nullptr) {}
+
+	~ModelSubsets()
+	{
+		SAFE_RELEASE_D3DCONTENTS(pVertexBuffer);
+		SAFE_RELEASE_D3DCONTENTS(pIndexBuffer);
+	}
+};

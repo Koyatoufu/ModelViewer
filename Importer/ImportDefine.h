@@ -25,20 +25,12 @@ enum E_IMPORT_FORMAT_TYPE
 	E_IMPORT_FORMAT_MAX
 };
 
-struct VertexData
-{
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT2 uv;
-	DirectX::XMFLOAT3 normal;
-
-	VertexData() :position(0.0f,0.0f,0.0f), uv(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f) {};
-};
-
 struct VertexGroup
 {
 	std::vector<DirectX::XMFLOAT3> vtPositions;
 	std::vector<DirectX::XMFLOAT2> vtUVs;
 	std::vector<DirectX::XMFLOAT3> vtNormals;
+
 	std::vector<unsigned int> vtIndexDatas;
 	std::vector<unsigned int> vtUVIndexDatas;
 	std::vector<unsigned int> vtNormalIndexDatas;

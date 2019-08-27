@@ -1,15 +1,14 @@
 #include "D3Dclass.h"
 
-CD3DClass::CD3DClass()
+CD3DClass::CD3DClass():
+	m_pSwapChain(nullptr),
+	m_pDevice(nullptr),
+	m_pDeviceContext(nullptr),
+	m_pRenderTargetView(nullptr),
+	m_pDepthStencilBuffer(nullptr),
+	m_pDepthStencilView(nullptr),
+	m_pRasterState(nullptr)
 {
-	m_swapChain = 0;
-	m_device = 0;
-	m_deviceContext = 0;
-	m_renderTargetView = 0;
-	m_depthStencilBuffer = 0;
-	m_depthStencilState = 0;
-	m_depthStencilView = 0;
-	m_rasterState = 0;
 }
 
 
@@ -20,6 +19,7 @@ CD3DClass::CD3DClass(const CD3DClass& other)
 
 CD3DClass::~CD3DClass()
 {
+	Shutdown();
 }
 
 
@@ -46,7 +46,7 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 
 
 	// Store the vsync setting.
-	m_vsync_enabled = vsync;
+	m_bVsync_enabled = vsync;
 
 	// Create a DirectX graphics interface factory.
 	if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory)))
@@ -102,10 +102,10 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	}
 
 	// Store the dedicated video card memory in megabytes.
-	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
+	m_nVideoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
-	error = wcstombs_s((size_t*)&stringLength, m_videoCardDescription, 128, adapterDesc.Description, 128);
+	error = wcstombs_s((size_t*)&stringLength, m_szVideoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 	{
 		return false;
@@ -130,7 +130,7 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	// Set the refresh rate of the back buffer.
-	if (m_vsync_enabled)
+	if (m_bVsync_enabled)
 	{
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
@@ -176,19 +176,19 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.
 	if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
-		D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceContext)))
+		D3D11_SDK_VERSION, &swapChainDesc, &m_pSwapChain, &m_pDevice, NULL, &m_pDeviceContext)))
 	{
 		return false;
 	}
 
 	// Get the pointer to the back buffer.
-	if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr)))
+	if (FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr)))
 	{
 		return false;
 	}
 
 	// Create the render target view with the back buffer pointer.
-	if (FAILED(m_device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView)))
+	if (FAILED(m_pDevice->CreateRenderTargetView(backBufferPtr, NULL, &m_pRenderTargetView)))
 	{
 		return false;
 	}
@@ -214,7 +214,7 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	depthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description.
-	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer)))
+	if (FAILED(m_pDevice->CreateTexture2D(&depthBufferDesc, NULL, &m_pDepthStencilBuffer)))
 	{
 		return false;
 	}
@@ -244,13 +244,13 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Create the depth stencil state.
-	if (FAILED(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState)))
+	if (FAILED(m_pDevice->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilState)))
 	{
 		return false;
 	}
 
 	// Set the depth stencil state.
-	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
+	m_pDeviceContext->OMSetDepthStencilState(m_pDepthStencilState, 1);
 
 	// Initialize the depth stencil view.
 	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
@@ -261,13 +261,13 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.
-	if (FAILED(m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView)))
+	if (FAILED(m_pDevice->CreateDepthStencilView(m_pDepthStencilBuffer, &depthStencilViewDesc, &m_pDepthStencilView)))
 	{
 		return false;
 	}
 
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
-	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+	m_pDeviceContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	rasterDesc.AntialiasedLineEnable = false;
@@ -282,13 +282,13 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 	// Create the rasterizer state from the description we just filled out.
-	if (FAILED(m_device->CreateRasterizerState(&rasterDesc, &m_rasterState)))
+	if (FAILED(m_pDevice->CreateRasterizerState(&rasterDesc, &m_pRasterState)))
 	{
 		return false;
 	}
 
 	// Now set the rasterizer state.
-	m_deviceContext->RSSetState(m_rasterState);
+	m_pDeviceContext->RSSetState(m_pRasterState);
 
 	// Setup the viewport for rendering.
 	viewport.Width = (float)screenWidth;
@@ -299,7 +299,7 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 	viewport.TopLeftY = 0.0f;
 
 	// Create the viewport.
-	m_deviceContext->RSSetViewports(1, &viewport);
+	m_pDeviceContext->RSSetViewports(1, &viewport);
 
 	// Setup the projection matrix.
 	fieldOfView = (float)XM_PI / 4.0f;
@@ -321,17 +321,17 @@ bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND h
 void CD3DClass::Shutdown()
 {
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	if (m_swapChain)
-		m_swapChain->SetFullscreenState(false, NULL);
+	if (m_pSwapChain)
+		m_pSwapChain->SetFullscreenState(false, NULL);
 
-	SAFE_RELEASE_D3DCONTENTS(m_rasterState);
-	SAFE_RELEASE_D3DCONTENTS(m_depthStencilView);
-	SAFE_RELEASE_D3DCONTENTS(m_depthStencilState);
-	SAFE_RELEASE_D3DCONTENTS(m_depthStencilBuffer);
-	SAFE_RELEASE_D3DCONTENTS(m_renderTargetView);
-	SAFE_RELEASE_D3DCONTENTS(m_deviceContext);
-	SAFE_RELEASE_D3DCONTENTS(m_device);
-	SAFE_RELEASE_D3DCONTENTS(m_swapChain);
+	SAFE_RELEASE_D3DCONTENTS(m_pRasterState);
+	SAFE_RELEASE_D3DCONTENTS(m_pDepthStencilView);
+	SAFE_RELEASE_D3DCONTENTS(m_pDepthStencilState);
+	SAFE_RELEASE_D3DCONTENTS(m_pDepthStencilBuffer);
+	SAFE_RELEASE_D3DCONTENTS(m_pRenderTargetView);
+	SAFE_RELEASE_D3DCONTENTS(m_pDeviceContext);
+	SAFE_RELEASE_D3DCONTENTS(m_pDevice);
+	SAFE_RELEASE_D3DCONTENTS(m_pSwapChain);
 }
 
 
@@ -340,10 +340,10 @@ void CD3DClass::BeginScene(float red, float green, float blue, float alpha)
 	float color[4] = { red, green, blue, alpha };
 
 	// Clear the back buffer.
-	m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);
+	m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, color);
 
 	// Clear the depth buffer.
-	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	return;
 }
@@ -352,24 +352,24 @@ void CD3DClass::BeginScene(float red, float green, float blue, float alpha)
 void CD3DClass::EndScene()
 {
 	// Present the back buffer to the screen since rendering is complete.
-	if (m_vsync_enabled)
+	if (m_bVsync_enabled)
 		// Lock to screen refresh rate.
-		m_swapChain->Present(1, 0);
+		m_pSwapChain->Present(1, 0);
 	else
 		// Present as fast as possible.
-		m_swapChain->Present(0, 0);
+		m_pSwapChain->Present(0, 0);
 }
 
 
 ID3D11Device* CD3DClass::GetDevice()
 {
-	return m_device;
+	return m_pDevice;
 }
 
 
 ID3D11DeviceContext* CD3DClass::GetDeviceContext()
 {
-	return m_deviceContext;
+	return m_pDeviceContext;
 }
 
 
@@ -393,8 +393,8 @@ void CD3DClass::GetOrthoMatrix(XMMATRIX& orthoMatrix)
 
 void CD3DClass::GetVideoCardInfo(char* cardName, int& memory)
 {
-	strcpy_s(cardName, 128, m_videoCardDescription);
-	memory = m_videoCardMemory;
+	strcpy_s(cardName, 128, m_szVideoCardDescription);
+	memory = m_nVideoCardMemory;
 }
 
 //bool CD3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen,

@@ -1,12 +1,20 @@
 #include "ColorModel.h"
+#include "Material.h"
+#include "Shader.h"
 
-CColorModel::CColorModel()
+CColorModel::CColorModel():
+	m_pVertexBuffer(nullptr),
+	m_pIndexBuffer(nullptr),
+	m_nVertexCount(0),
+	m_nIndexCount(0)
 {
 }
 
 
 CColorModel::~CColorModel()
 {
+	SAFE_RELEASE_D3DCONTENTS(m_pVertexBuffer);
+	SAFE_RELEASE_D3DCONTENTS(m_pIndexBuffer);
 }
 
 
@@ -18,13 +26,16 @@ HRESULT CColorModel::Initialize(ID3D11Device* pDevice, ModelData * pModelData)
 	return S_OK;
 }
 
-void CColorModel::Render(ID3D11DeviceContext* deviceContext)
+void CColorModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferType * pMatrixBuffer, LightBufferType * pLightBuffer, CameraBufferType * pCameraBuffer)
 {
-	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	RenderBuffers(deviceContext);
+	RenderBuffers(pDeviceContext);
 
-	return;
+	if (m_pShader)
+	{
+		m_pShader->Render(pDeviceContext, m_nIndexCount, m_vtMaterial[0], pMatrixBuffer, pLightBuffer, pCameraBuffer);
+	}
 }
+
 
 void CColorModel::Update()
 {
@@ -107,8 +118,6 @@ HRESULT CColorModel::InitBuffers(ID3D11Device* pDevice, ModelData* pModelData)
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	SAFE_DELETE_ARRAY(pVertices);
 	SAFE_DELETE_ARRAY(pIndices);
-
-	m_nInstanceCount = 1;
 
 	return S_OK;
 }
