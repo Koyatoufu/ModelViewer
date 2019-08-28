@@ -17,19 +17,30 @@ CBaseModel::~CBaseModel()
 	for (size_t i = 0; i < m_vtSubsets.size(); ++i)
 		SAFE_DELETE(m_vtSubsets[i]);
 
-	for (size_t i = 0; i < m_vtMaterial.size(); ++i)
-		SAFE_DELETE(m_vtMaterial[i]);
+	for (std::map<std::basic_string<TCHAR>, CMaterial*>::iterator iter = m_mapMaterial.begin(); iter != m_mapMaterial.end(); ++iter)
+	{
+		SAFE_DELETE((*iter).second);
+	}
+
+	m_mapMaterial.clear();
 }
 
-CMaterial * CBaseModel::GetMaterial(int nIndex)
+CMaterial * CBaseModel::GetMaterial(std::basic_string<TCHAR> strName)
 {
-	if( m_vtMaterial.size() < 1 )
+	if( m_mapMaterial.size() < 1 )
 		return nullptr;
 
-	if (nIndex >= m_vtMaterial.size() || nIndex < 0)
-		return m_vtMaterial[m_vtMaterial.size() - 1];
+	std::map<std::basic_string<TCHAR>, CMaterial*>::iterator iter = m_mapMaterial.begin();
 
-	return m_vtMaterial[nIndex];
+	if (strName.empty() || iter == m_mapMaterial.end())
+		return nullptr;
+
+	std::map<std::basic_string<TCHAR>, CMaterial*>::iterator iterFind = m_mapMaterial.find(strName);
+
+	if (iterFind == m_mapMaterial.end())
+		return iter->second;
+
+	return iterFind->second;
 }
 
 ModelSubsets * CBaseModel::GetSubSets(int nIndex)

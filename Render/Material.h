@@ -10,6 +10,8 @@ private:
 	DirectX::XMFLOAT4 m_ambientColor;
 	DirectX::XMFLOAT4 m_specularColor;
 
+	std::basic_string<TCHAR> m_strName;
+
 public:
 	CMaterial();
 	~CMaterial();
@@ -28,6 +30,9 @@ public:
 
 	DirectX::XMFLOAT4 GetSpecularColor() { return m_specularColor; }
 	void SetSpecularColor(float r, float g, float b, float a = 1.f);
+
+	std::basic_string<TCHAR> GetName() const{ return m_strName; }
+	void SetName(std::basic_string<TCHAR> strName) { m_strName = strName; }
 private:
 	ID3D11ShaderResourceView* LoadTextureView(ID3D11Device* pDevice, std::basic_string<TCHAR> strTexFileName);
 };

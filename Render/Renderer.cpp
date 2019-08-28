@@ -55,15 +55,15 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 	m_pLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_pLight->SetSpecularPower(32.0f);
 
-	m_pTestModel = new CTextureModel();
-	//m_pTestModel = new CLightModel();
+	//m_pTestModel = new CTextureModel();
+	m_pTestModel = new CLightModel();
 	if (FAILED(m_pTestModel->Initialize(pDevice,nullptr)))
 	{
 		return E_FAIL;
 	}
 
-	m_pTestShader = new CTextureShader();
-	//m_pTestShader = new CLightShader();
+	//m_pTestShader = new CTextureShader();
+	m_pTestShader = new CLightShader();
 	if (FAILED(m_pTestShader->Initialize(pDevice)))
 	{
 		return E_FAIL;
@@ -77,6 +77,8 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 void CRenderer::Update()
 {
 	m_pCamera->Update();
+
+	m_pTestModel->Update();
 }
 
 void CRenderer::Render()

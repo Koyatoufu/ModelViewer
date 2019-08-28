@@ -17,7 +17,7 @@ protected:
 	virtual HRESULT InitBuffers(ID3D11Device* pDevice, ModelData* pModelData) override;
 	virtual HRESULT InitMaterial(ID3D11Device * pDevice, ModelData* pModelData) override;
 
-	virtual void RenderBuffers(ID3D11DeviceContext* pDeviceContext) override;
+	virtual void RenderBuffers(ID3D11DeviceContext* pDeviceContext, ModelSubsets* pSubset) override;
 private:
 	CLightModel(CLightModel&) {};
 };

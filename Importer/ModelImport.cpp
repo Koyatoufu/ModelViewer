@@ -93,6 +93,10 @@ ModelData * CModelImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 		pGroup->vtNormals.push_back(normal);
 
 		pGroup->vtIndexDatas.push_back(i);
+		pGroup->vtNormalIndexDatas.push_back(i);
+		pGroup->vtUVIndexDatas.push_back(i);
+
+		pGroup->vtTotalIndicies.push_back(i);
 	}
 
 	pModelData->vtMeshes.push_back(pGroup);
@@ -110,6 +114,8 @@ ModelData * CModelImporter::FbxLoad(std::basic_string<TCHAR> strFileName)
 	return pModelData;
 }
 
+//directX ¿Þ¼ÕÁÂÇ¥²¾ obj ¿À¸¥¼Õ ÁÂÇ¥°è
+//blender or max¸¸ ´ëÀÀ?
 ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 {
 	if (strFileName.empty())
@@ -130,6 +136,8 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 	VertexGroup* pGroup = nullptr;
 
+	int nTotalVertex = 0;
+
 	while (true)
 	{
 		TCHAR szLineHeader[256] = {};
@@ -137,31 +145,25 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 		int nRes = _ftscanf_s(pFIle, _T("%s"), szLineHeader,256);
 
 		if (nRes == EOF)
-		{
-			if(pGroup)
-				pModelData->vtMeshes.push_back(pGroup);
 			break;
-		}
-
+		
 		if (_tcscmp(szLineHeader, _T("mtllib")) == 0)
 		{
 			_ftscanf_s(pFIle, _T("%s"), szMtlName,256);
 		}
-		else if (_tcscmp(szLineHeader, _T("o")) == 0)
+		else if (_tcscmp(szLineHeader, _T("object")) == 0 || _tcscmp(szLineHeader, _T("o")) == 0)
 		{
-			if (pGroup == nullptr)
-			{
-				pGroup = new VertexGroup();
-			}
-			else
+			if (pGroup)
 			{
 				pModelData->vtMeshes.push_back(pGroup);
-				pGroup = new VertexGroup();
+				nTotalVertex = 0;
 			}
+
+			pGroup = new VertexGroup();
 
 			TCHAR szGroupName[128] = {};
 
-			_ftscanf_s(pFIle, _T("%s"),szGroupName,128);
+			_ftscanf_s(pFIle, _T("%s"), szGroupName, 128);
 
 			pGroup->strGroupName = szGroupName;
 		}
@@ -171,6 +173,9 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			{
 				DirectX::XMFLOAT3 position;
 				_ftscanf_s(pFIle, _T("%f %f %f\n"), &position.x, &position.y, &position.z );
+
+				position.z *= -1.0f;
+
 				pGroup->vtPositions.push_back(position);
 			}
 		}
@@ -180,6 +185,8 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			{
 				DirectX::XMFLOAT2 UV;
 				_ftscanf_s(pFIle, _T("%f %f\n"), &UV.x, &UV.y);
+
+				UV.y = 1.0f - UV.y;		//directX ¿Þ¼ÕÁÂÇ¥²¾ obj ¿À¸¥¼Õ ÁÂÇ¥°è
 				pGroup->vtUVs.push_back(UV);
 			}
 		}
@@ -189,6 +196,9 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			{
 				DirectX::XMFLOAT3 normal;
 				_ftscanf_s(pFIle, _T("%f %f %f\n"), &normal.x, &normal.y, &normal.z);
+
+				normal.z *= -1.0f;	 				//directX ¿Þ¼ÕÁÂÇ¥²¾ obj ¿À¸¥¼Õ ÁÂÇ¥°è
+
 				pGroup->vtNormals.push_back(normal);
 			}
 		}
@@ -198,9 +208,9 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			{
 				unsigned int unArrVertexIndex[3] = {}, unArrUVIndex[3] = {}, unArrNormalIndex[3] = {};
 				int nMatches = _ftscanf_s(pFIle, _T("%d/%d/%d %d/%d/%d %d/%d/%d\n"), 
-					&unArrNormalIndex[0], &unArrUVIndex[0], &unArrNormalIndex[0]
-					, &unArrNormalIndex[1], &unArrUVIndex[1], &unArrNormalIndex[1]
-					, &unArrNormalIndex[2], &unArrUVIndex[2], &unArrNormalIndex[2]);
+					&unArrVertexIndex[0], &unArrUVIndex[0], &unArrNormalIndex[0]
+					, &unArrVertexIndex[1], &unArrUVIndex[1], &unArrNormalIndex[1]
+					, &unArrVertexIndex[2], &unArrUVIndex[2], &unArrNormalIndex[2]);
 
 				if (nMatches != 9)
 				{
@@ -210,10 +220,38 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 				for (int i = 0; i < 3; i++)
 				{
-					pGroup->vtIndexDatas.push_back(unArrVertexIndex[i]);
-					pGroup->vtUVIndexDatas.push_back(unArrUVIndex[i]);
-					pGroup->vtNormalIndexDatas.push_back(unArrNormalIndex[i]);
+					bool isVertAlreadyExist = false;
+
+					int nTempIndex = unArrVertexIndex[i] - 1 ;
+					int nTempUVIndex = unArrUVIndex[i] - 1;
+					int nTempNormalIndex = unArrNormalIndex[i] - 1;
+
+					if (nTotalVertex >= 3)
+					{
+						for (int nCheck = 0; nCheck < nTotalVertex; ++nCheck)
+						{
+							if (nTempIndex == pGroup->vtIndexDatas[nCheck] && isVertAlreadyExist == false )
+							{
+								if (nTempUVIndex == pGroup->vtUVIndexDatas[nCheck])
+								{
+									pGroup->vtTotalIndicies.push_back(nCheck);
+									isVertAlreadyExist = true;
+								}
+							}
+						}
+					}
+
+					if (isVertAlreadyExist == false)
+					{
+						pGroup->vtIndexDatas.push_back(nTempIndex);
+						pGroup->vtUVIndexDatas.push_back(nTempUVIndex);
+						pGroup->vtNormalIndexDatas.push_back(nTempNormalIndex);
+						pGroup->vtTotalIndicies.push_back(nTotalVertex);
+						nTotalVertex++;
+					}
 				}
+
+
 			}
 		}
 		else if (_tcscmp(szLineHeader, _T("usemtl")) == 0)
@@ -232,10 +270,16 @@ ModelData * CModelImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 	{
 		SAFE_DELETE(pModelData);
 	}
+	else
+	{
+		pModelData->vtMeshes.push_back(pGroup);
+	}
 
 	if (_tcslen(szMtlName) > 0)
 	{
-		MessageBox(NULL, szMtlName, _T("¸ÓÅ×¸®¾ó ÀÌ¸§ È®ÀÎ"), MB_OK);
+
+
+		//MessageBox(NULL, szMtlName, _T("¸ÓÅ×¸®¾ó ÀÌ¸§ È®ÀÎ"), MB_OK);
 	}
 
 	return pModelData;

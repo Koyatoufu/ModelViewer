@@ -35,6 +35,8 @@ struct VertexGroup
 	std::vector<unsigned int> vtUVIndexDatas;
 	std::vector<unsigned int> vtNormalIndexDatas;
 
+	std::vector<DWORD> vtTotalIndicies;
+
 	std::basic_string<TCHAR> strGroupName;
 	std::basic_string<TCHAR> strMtlName;
 

@@ -102,6 +102,8 @@ struct ModelSubsets
 	std::vector<DWORD>		vtIndices;
 	std::vector<WeightType>		vtWeights;
 	
+	std::basic_string<TCHAR> strMtlName;
+
 	ID3D11Buffer* pVertexBuffer;
 	ID3D11Buffer* pIndexBuffer;
 

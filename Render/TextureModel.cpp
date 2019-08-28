@@ -31,7 +31,7 @@ void CTextureModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferTyp
 
 	if (m_pShader)
 	{
-		m_pShader->Render(pDeviceContext, m_nIndexCount, m_nInstanceCount, m_vtMaterial[0], pMatrixBuffer, pLightBuffer, pCameraBuffer);
+		m_pShader->Render(pDeviceContext, m_nIndexCount, m_nInstanceCount, GetMaterial(), pMatrixBuffer, pLightBuffer, pCameraBuffer);
 	}
 }
 
@@ -39,7 +39,7 @@ void CTextureModel::Update()
 {
 }
 
-void CTextureModel::RenderBuffers(ID3D11DeviceContext *pDeviceContext)
+void CTextureModel::RenderBuffers(ID3D11DeviceContext *pDeviceContext, ModelSubsets* pSubset)
 {
 	if (m_bInstnceUse)
 	{
@@ -98,21 +98,23 @@ HRESULT CTextureModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelDat
 	if (!vertices)
 		return E_FAIL;
 
+	CMaterial* pMaterial = GetMaterial();
+
 	// Load the vertex array with data.
 	vertices[0].position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	vertices[0].color = m_vtMaterial.size() > 0 && m_vtMaterial[0] ? m_vtMaterial[0]->GetDiffuseColor(): DirectX::XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
+	vertices[0].color = pMaterial ? pMaterial->GetDiffuseColor(): DirectX::XMFLOAT4(0.0f,0.0f,0.0f,1.0f);
 	vertices[0].UV = DirectX::XMFLOAT2(0.0f, 1.0f);
 
 	vertices[1].position = DirectX::XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top middle.
-	vertices[1].color = m_vtMaterial.size() > 0 && m_vtMaterial[0] ? m_vtMaterial[0]->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	vertices[1].color = pMaterial ? pMaterial->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	vertices[1].UV = DirectX::XMFLOAT2(0.0f, 0.0f);
 
 	vertices[2].position = DirectX::XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[2].color = m_vtMaterial.size() > 0 && m_vtMaterial[0] ? m_vtMaterial[0]->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	vertices[2].color = pMaterial ? pMaterial->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	vertices[2].UV = DirectX::XMFLOAT2(1.0f, 1.0f);
 
 	vertices[3].position = DirectX::XMFLOAT3(1.0f, 1.0f, 0.0f);  // Bottom right.
-	vertices[3].color = m_vtMaterial.size() > 0 && m_vtMaterial[0] ? m_vtMaterial[0]->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	vertices[3].color = pMaterial ? pMaterial->GetDiffuseColor() : DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	vertices[3].UV = DirectX::XMFLOAT2(1.0f, 0.0f);
 
 	// Set up the description of the static vertex buffer.
@@ -237,7 +239,9 @@ HRESULT CTextureModel::InitMaterial(ID3D11Device * pDevice, ModelData* pModelDat
 		return E_FAIL;
 	}
 
-	m_vtMaterial.push_back(pMaterial);
+	pMaterial->SetName(_T("Basic"));
+
+	m_mapMaterial.insert(std::pair<std::basic_string<TCHAR>, CMaterial*>(_T("Basic"), pMaterial));
 
 	return S_OK;
 }

@@ -32,7 +32,7 @@ void CColorModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferType 
 
 	if (m_pShader)
 	{
-		m_pShader->Render(pDeviceContext, m_nIndexCount, m_vtMaterial[0], pMatrixBuffer, pLightBuffer, pCameraBuffer);
+		m_pShader->Render(pDeviceContext, m_nIndexCount, GetMaterial(), pMatrixBuffer, pLightBuffer, pCameraBuffer);
 	}
 }
 
@@ -128,7 +128,7 @@ HRESULT CColorModel::InitMaterial(ID3D11Device * pDevice, ModelData* pModelData)
 }
 
 
-void CColorModel::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
+void CColorModel::RenderBuffers(ID3D11DeviceContext* pDeviceContext, ModelSubsets* pSubset)
 {
 	unsigned int unStride;
 	unsigned int unOffset;
