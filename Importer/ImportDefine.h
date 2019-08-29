@@ -25,25 +25,69 @@ enum E_IMPORT_FORMAT_TYPE
 	E_IMPORT_FORMAT_MAX
 };
 
-struct VertexGroup
+struct Joint
 {
-	std::vector<DirectX::XMFLOAT3> vtPositions;
-	std::vector<DirectX::XMFLOAT2> vtUVs;
-	std::vector<DirectX::XMFLOAT3> vtNormals;
+	std::basic_string<TCHAR> strName;
+	int nParentID;
 
-	std::vector<unsigned int> vtIndexDatas;
-	std::vector<unsigned int> vtUVIndexDatas;
-	std::vector<unsigned int> vtNormalIndexDatas;
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT4 orientation;
 
-	std::vector<DWORD> vtTotalIndicies;
+	Joint() : nParentID(0), position(0.0f, 0.0f, 0.0f), orientation(0.0f, 0.0f, 0.0f, 1.0f) {}
+};
+
+struct Weight
+{
+	int nJointID;
+	float fBias;
+	DirectX::XMFLOAT3 position;
+
+	Weight() : nJointID(0), fBias(0.0f), position(0.0f, 0.0f, 0.0f) {}
+};
+
+struct Vertex
+{
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 UV;
+	DirectX::XMFLOAT3 normal;
+
+	DirectX::XMFLOAT3 tangent;
+	DirectX::XMFLOAT3 biTangent;
+
+	int nStartWeight;
+	int nWeightCount;
+
+	Vertex() :
+		position(0.0f, 0.0f, 0.0f), UV(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f),
+		tangent(0.0f, 0.0f, 0.0f), biTangent(0.0f, 0.0f, 0.0f),
+		nStartWeight(0), nWeightCount(0) {}
+};
+
+struct MeshGroup
+{
+	std::vector<Vertex> vtVertices;
+	std::vector<DWORD> vtIndicies;
+
+	std::vector<Weight> vtWeights;
+
+	//std::vector<DirectX::XMFLOAT3> vtPositions;
+	//std::vector<DirectX::XMFLOAT2> vtUVs;
+	//std::vector<DirectX::XMFLOAT3> vtNormals;
+
+	//std::vector<DWORD> vtStartWeights;
+	//std::vector<DWORD> vtWeightCount;
+
+	//std::vector<unsigned int> vtIndexDatas;
+	//std::vector<unsigned int> vtUVIndexDatas;
+	//std::vector<unsigned int> vtNormalIndexDatas;
 
 	std::basic_string<TCHAR> strGroupName;
 	std::basic_string<TCHAR> strMtlName;
 
 	int nMaterialIdx;
 
-	VertexGroup():nMaterialIdx(0) {}
-	~VertexGroup() {}
+	MeshGroup():nMaterialIdx(0){}
+	~MeshGroup() {}
 };
 
 struct MaterialData
@@ -59,14 +103,31 @@ struct MaterialData
 		std::basic_string<TCHAR> strNormalMap;
 		std::basic_string<TCHAR> strDiffuseMap;
 		std::basic_string<TCHAR> strSpecularMap;
+
+		std::basic_string<TCHAR> strAmbientMap;
+		std::basic_string<TCHAR> strAlphaMap;
+
+		float fSpecularDistance;
+		float fAlpha;
+		int nIluminationOption;
 	};
 
 	std::vector<MaterialInfo*> vtMaterialInfo;
+
+	~MaterialData()
+	{
+		for (size_t i = 0; i < vtMaterialInfo.size(); ++i)
+		{
+			SAFE_DELETE(vtMaterialInfo[i]);
+		}
+	}
 };
 
 struct ModelData
 {
-	std::vector< VertexGroup* > vtMeshes;
+	std::vector<Joint> vtJoints;
+
+	std::vector< MeshGroup* > vtMeshes;
 	MaterialData* pMaterialData;
 	bool bSkinned;
 

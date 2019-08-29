@@ -17,27 +17,21 @@
     <ClInclude Include="ImportUtil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialImport.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="BaseImporter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="SingleTon.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ModelImporter.h">
+    <ClInclude Include="FormatImporter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ModelImport.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ImportUtil.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MaterialImport.cpp">
+    <ClCompile Include="FormatImport.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,9 +1,9 @@
 #include "ImportUtil.h"
-#include "ModelImporter.h"
+#include "FormatImporter.h"
 
 CImportUtil::CImportUtil()
 {
-	m_pModelImporter = new CModelImporter();
+	m_pModelImporter = new CFormatImporter();
 }
 CImportUtil::~CImportUtil()
 {

@@ -16,7 +16,10 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
-	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\sphere.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\sphere.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_one.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_two.obj"));
+	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
 
 	if (pModelData == nullptr)
 		return E_FAIL;
@@ -77,10 +80,10 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	
 	for (i = 0; i < pModelData->vtMeshes.size(); ++i)
 	{
-		VertexGroup* pGroup = pModelData->vtMeshes[i];
+		MeshGroup* pGroup = pModelData->vtMeshes[i];
 
 		if ( pGroup == nullptr || 
-			pGroup->vtIndexDatas.size() < 1 ||
+			pGroup->vtIndicies.size() < 1 ||
 			pGroup->vtIndexDatas.size() != pGroup->vtNormalIndexDatas.size() ||
 			pGroup->vtIndexDatas.size() != pGroup->vtUVIndexDatas.size() )
 			continue;
@@ -122,12 +125,9 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
-		vertexBufferDesc.StructureByteStride = 0;
 
 		// Give the subresource structure a pointer to the vertex data.
 		vertexData.pSysMem = &pSubSet->vtVertices[0];
-		vertexData.SysMemPitch = 0;
-		vertexData.SysMemSlicePitch = 0;
 
 		if (FAILED(pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &pSubSet->pVertexBuffer)))
 		{
@@ -137,9 +137,9 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 
 		//DWORD* parIndices = new DWORD[pGroup->vtIndexDatas.size()];
 
-		for (int j = 0; j < pGroup->vtTotalIndicies.size(); ++j)
+		for (int j = 0; j < pGroup->vtIndicies.size(); ++j)
 		{
-			DWORD dwIndices = pGroup->vtTotalIndicies[j];
+			DWORD dwIndices = pGroup->vtIndicies[j];
 
 			pSubSet->vtIndices.push_back(dwIndices);
 		}
@@ -156,12 +156,9 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 		indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		indexBufferDesc.CPUAccessFlags = 0;
 		indexBufferDesc.MiscFlags = 0;
-		indexBufferDesc.StructureByteStride = 0;
 
 		// Give the subresource structure a pointer to the index data.
 		indexData.pSysMem = &pSubSet->vtIndices[0];
-		indexData.SysMemPitch = 0;
-		indexData.SysMemSlicePitch = 0;
 
 		if (FAILED(pDevice->CreateBuffer(&indexBufferDesc, &indexData, &pSubSet->pIndexBuffer)))
 		{

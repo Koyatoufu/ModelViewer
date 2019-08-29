@@ -214,6 +214,8 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 	pMatrixBuffer->view = XMMatrixTranspose(pMatrixBuffer->view);
 	pMatrixBuffer->projection = XMMatrixTranspose(pMatrixBuffer->projection);
 
+	pDeviceContext->UpdateSubresource(m_pMatrixBuffer, 0, nullptr, pMatrixBuffer, 0, 0);
+
 	// Lock the constant buffer so it can be written to.
 	if (FAILED(pDeviceContext->Map(m_pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 	{
@@ -233,7 +235,6 @@ HRESULT CLightShader::SetShaderParameters(ID3D11DeviceContext * pDeviceContext, 
 
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
-
 	// Now set the constant buffer in the vertex shader with the updated values.
 	pDeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_pMatrixBuffer);
 
