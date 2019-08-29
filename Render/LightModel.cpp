@@ -15,11 +15,11 @@ CLightModel::~CLightModel()
 HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
-	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
+	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\sphere.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_one.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_two.obj"));
-	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
 
 	if (pModelData == nullptr)
 		return E_FAIL;
@@ -80,13 +80,13 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 	
 	for (i = 0; i < pModelData->vtMeshes.size(); ++i)
 	{
-		MeshGroup* pGroup = pModelData->vtMeshes[i];
+		MeshSubsets* pGroup = pModelData->vtMeshes[i];
 
-		if ( pGroup == nullptr || 
-			pGroup->vtIndicies.size() < 1 ||
-			pGroup->vtIndexDatas.size() != pGroup->vtNormalIndexDatas.size() ||
-			pGroup->vtIndexDatas.size() != pGroup->vtUVIndexDatas.size() )
-			continue;
+		//if ( pGroup == nullptr || 
+		//	pGroup->vtIndicies.size() < 1 ||
+		//	pGroup->vtIndexDatas.size() != pGroup->vtNormalIndexDatas.size() ||
+		//	pGroup->vtIndexDatas.size() != pGroup->vtUVIndexDatas.size() )
+		//	continue;
 
 		D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 		D3D11_SUBRESOURCE_DATA vertexData, indexData;
@@ -100,17 +100,21 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 
 		//VertexType* parVeticies = new VertexType[pGroup->vtIndexDatas.size()];
 
-		for (int j = 0; j < pGroup->vtIndexDatas.size(); ++j)
+		for (int j = 0; j < pGroup->vtVertices.size(); ++j)
 		{
-			VertexType vertex;
+			VertexType tempVertex;
 
-			vertex.position = pGroup->vtPositions[pGroup->vtIndexDatas[j]];
-			vertex.normal = pGroup->vtNormals[pGroup->vtNormalIndexDatas[j]];
-			vertex.UV = pGroup->vtUVs[pGroup->vtUVIndexDatas[j]];
+			tempVertex.position = pGroup->vtVertices[i].position;
+			tempVertex.normal = pGroup->vtVertices[i].normal;
+			tempVertex.UV = pGroup->vtVertices[i].UV;
 
-			pSubSet->vtVertices.push_back(vertex);
+			tempVertex.nStartWeight = pGroup->vtVertices[i].nStartWeight;
+			tempVertex.nWeightCount = pGroup->vtVertices[i].nWeightCount;
 
-			//parVeticies[j] = vertex;
+			tempVertex.tangent = pGroup->vtVertices[i].tangent;
+			tempVertex.biTangent = pGroup->vtVertices[i].biTangent;
+
+			pSubSet->vtVertices.push_back(tempVertex);
 		}
 
 		if (pSubSet->vtVertices.size() < 1)

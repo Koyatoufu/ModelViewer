@@ -1,5 +1,24 @@
 #include "FormatImporter.h"
 
+struct tempVertexGroup
+{
+	std::vector<DirectX::XMFLOAT3> vtPositions;
+	std::vector<DirectX::XMFLOAT2> vtUVs;
+	std::vector<DirectX::XMFLOAT3> vtNormals;
+
+	std::vector<unsigned int> vtIndexDatas;
+	std::vector<unsigned int> vtUVIndexDatas;
+	std::vector<unsigned int> vtNormalIndexDatas;
+
+	std::basic_string<TCHAR> strGroupName;
+	std::basic_string<TCHAR> strMtlName;
+
+	std::vector<DWORD> vtStartWeights;
+	std::vector<DWORD> vtWeightCount;
+
+	std::vector<DWORD> vtIndicies;
+};
+
 CFormatImporter::CFormatImporter()
 {
 	for (int i = 0; i < E_IMPORT_FORMAT_MAX; i++)
@@ -56,7 +75,7 @@ ModelData * CFormatImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 
 	ModelData* pModelData = new ModelData();
 
-	MeshGroup* pGroup = new MeshGroup();
+	MeshSubsets* pGroup = new MeshSubsets();
 
 	unsigned int nVertexCount = 0;
 
@@ -87,16 +106,13 @@ ModelData * CFormatImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 		fIn >> uv.x >> uv.y;
 		fIn >> normal.x >> normal.y >> normal.z;
 
-		Vertex vertex;
+		Vertex vertexTemp;
 
-		//pGroup->vtPositions.push_back(position);
-		//pGroup->vtUVs.push_back(uv);
-		//pGroup->vtNormals.push_back(normal);
+		vertexTemp.position = position;
+		vertexTemp.UV = uv;
+		vertexTemp.normal = normal;
 
-		//pGroup->vtIndexDatas.push_back(i);
-		//pGroup->vtNormalIndexDatas.push_back(i);
-		//pGroup->vtUVIndexDatas.push_back(i);
-		pGroup->vtVertices.push_back(vertex);
+		pGroup->vtVertices.push_back(vertexTemp);
 		pGroup->vtIndicies.push_back(i);
 	}
 
@@ -135,20 +151,9 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 	pModelData = new ModelData();
 
-	MeshGroup* pGroup = nullptr;
-
 	int nTotalVertex = 0;
 
-	struct tempVertexGroup
-	{
-		std::vector<DirectX::XMFLOAT3> vtPositions;
-		std::vector<DirectX::XMFLOAT2> vtUVs;
-		std::vector<DirectX::XMFLOAT3> vtNormals;
-
-		std::vector<unsigned int> vtIndexDatas;
-		std::vector<unsigned int> vtUVIndexDatas;
-		std::vector<unsigned int> vtNormalIndexDatas;
-	};
+	tempVertexGroup *pTempVertexGroup = nullptr;
 
 	std::vector<tempVertexGroup*> vtVertexGroups;
 
@@ -177,14 +182,14 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 		{
 			nTotalVertex = 0;
 			
-			pGroup = new MeshGroup();
-			vtVertexGroups.push_back(pGroup);
+			pTempVertexGroup = new tempVertexGroup();
+			vtVertexGroups.push_back(pTempVertexGroup);
 
 			TCHAR szGroupName[128] = {};
 
 			nRes = _ftscanf_s(pFIle, _T("%s"), szGroupName, 128);
 
-			pGroup->strGroupName = szGroupName;
+			pTempVertexGroup->strGroupName = szGroupName;
 
 			if (vtVertexGroups.size() > 1)
 			{
@@ -214,42 +219,42 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 		}
 		else if (_tcscmp(szLineHeader, _T("v")) == 0)
 		{
-			if (pGroup)
+			if (pTempVertexGroup)
 			{
 				DirectX::XMFLOAT3 position;
 				nRes = _ftscanf_s(pFIle, _T("%f %f %f\n"), &position.x, &position.y, &position.z );
 
 				//position.z *= -1.0f;
 
-				pGroup->vtPositions.push_back(position);
+				pTempVertexGroup->vtPositions.push_back(position);
 			}
 		}
 		else if (_tcscmp(szLineHeader, _T("vt")) == 0)
 		{
-			if (pGroup)
+			if (pTempVertexGroup)
 			{
 				DirectX::XMFLOAT2 UV;
 				nRes = _ftscanf_s(pFIle, _T("%f %f\n"), &UV.x, &UV.y);
 
 				UV.y = 1.0f - UV.y;		
-				pGroup->vtUVs.push_back(UV);
+				pTempVertexGroup->vtUVs.push_back(UV);
 			}
 		}
 		else if (_tcscmp(szLineHeader, _T("vn")) == 0)
 		{
-			if (pGroup)
+			if (pTempVertexGroup)
 			{
 				DirectX::XMFLOAT3 normal;
 				nRes = _ftscanf_s(pFIle, _T("%f %f %f\n"), &normal.x, &normal.y, &normal.z);
 
 				//normal.z *= -1.0f;	 				
 
-				pGroup->vtNormals.push_back(normal);
+				pTempVertexGroup->vtNormals.push_back(normal);
 			}
 		}
 		else if (_tcscmp(szLineHeader, _T("f")) == 0)
 		{
-			if (pGroup)
+			if (pTempVertexGroup)
 			{
 				unsigned int unArrVertexIndex[3] = {}, unArrUVIndex[3] = {}, unArrNormalIndex[3] = {};
 				int nMatches = _ftscanf_s(pFIle, _T("%d/%d/%d %d/%d/%d %d/%d/%d\n"), 
@@ -259,7 +264,7 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 				if (nMatches != 9)
 				{
-					SAFE_DELETE(pGroup);
+					SAFE_DELETE(pTempVertexGroup);
 					break;
 				}
 
@@ -283,11 +288,11 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 					{
 						for (int nCheck = 0; nCheck < nTotalVertex; ++nCheck)
 						{
-							if (nTempIndex == pGroup->vtIndexDatas[nCheck] && isVertAlreadyExist == false )
+							if (nTempIndex == pTempVertexGroup->vtIndexDatas[nCheck] && isVertAlreadyExist == false )
 							{
-								if (nTempUVIndex == pGroup->vtUVIndexDatas[nCheck])
+								if (nTempUVIndex == pTempVertexGroup->vtUVIndexDatas[nCheck])
 								{
-									pGroup->vtIndicies.push_back(nCheck);
+									pTempVertexGroup->vtIndicies.push_back(nCheck);
 									isVertAlreadyExist = true;
 								}
 							}
@@ -296,10 +301,10 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 					if (isVertAlreadyExist == false)
 					{
-						pGroup->vtIndexDatas.push_back(nTempIndex);
-						pGroup->vtUVIndexDatas.push_back(nTempUVIndex);
-						pGroup->vtNormalIndexDatas.push_back(nTempNormalIndex);
-						pGroup->vtIndicies.push_back(nTotalVertex);
+						pTempVertexGroup->vtIndexDatas.push_back(nTempIndex);
+						pTempVertexGroup->vtUVIndexDatas.push_back(nTempUVIndex);
+						pTempVertexGroup->vtNormalIndexDatas.push_back(nTempNormalIndex);
+						pTempVertexGroup->vtIndicies.push_back(nTotalVertex);
 						nTotalVertex++;
 					}
 				}
@@ -309,12 +314,12 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 		}
 		else if (_tcscmp(szLineHeader, _T("usemtl")) == 0)
 		{
-			if (pGroup)
+			if (pTempVertexGroup)
 			{
 				TCHAR szMtlName[128];
 
 				nRes = _ftscanf_s(pFIle, _T("%s"), szMtlName,128);
-				pGroup->strMtlName = szMtlName;
+				pTempVertexGroup->strMtlName = szMtlName;
 			}
 		}
 	}
@@ -332,7 +337,30 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			if (vtVertexGroups[i] == nullptr)
 				continue;
 
-			pModelData->vtMeshes.push_back(vtVertexGroups[i]);
+			tempVertexGroup* pGroup = vtVertexGroups[i];
+
+			MeshSubsets* pMeshSubsets = new MeshSubsets();
+
+			pMeshSubsets->strSubsetName = pGroup->strGroupName;
+			pMeshSubsets->strMtlName = pGroup->strMtlName;
+
+			for (int j = 0; j < pGroup->vtIndexDatas.size(); ++j)
+			{
+				Vertex vertex;
+
+				vertex.position = pGroup->vtPositions[pGroup->vtIndexDatas[j]];
+				vertex.normal = pGroup->vtNormals[pGroup->vtNormalIndexDatas[j]];
+				vertex.UV = pGroup->vtUVs[pGroup->vtUVIndexDatas[j]];
+
+				pMeshSubsets->vtVertices.push_back(vertex);
+			}
+
+			for (int j = 0; j < pGroup->vtIndicies.size(); ++j)
+			{
+				pMeshSubsets->vtIndicies.push_back(pGroup->vtIndicies[j]);
+			}
+
+			pModelData->vtMeshes.push_back(pMeshSubsets);
 		}
 
 		if (_tcslen(szMtlName) > 0)
@@ -343,6 +371,11 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 			if(pMtlData)
 				pModelData->pMaterialData = pMtlData;
+		}
+
+		for (size_t i = 0; i < vtVertexGroups.size(); ++i)
+		{
+			SAFE_DELETE(vtVertexGroups[i]);
 		}
 	}
 
@@ -369,6 +402,8 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 	int nNumOfJoints = 0;
 
 	std::vector<std::basic_string<TCHAR>> vtDiifuseNames;
+
+	std::vector<tempVertexGroup*> vtTemp;
 
 	while (nRes != EOF)
 	{
@@ -442,7 +477,7 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 		}
 		else if (_tcscmp(szLineHeader, _T("mesh")) == 0)
 		{
-			MeshGroup* pGroup = new MeshGroup();
+			tempVertexGroup* pGroup = new tempVertexGroup();
 
 			while (_tcscmp(szLineHeader, _T("}")) != 0)
 			{
@@ -517,26 +552,29 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 				}
 			}
 
-			pModelData->vtMeshes.push_back(pGroup);
+			vtTemp.push_back(pGroup);
 		}
 	}
 
-	if (pModelData->vtMeshes.size() != nNumOfSubsets)
+	if (vtTemp.size() != nNumOfSubsets)
 	{
 		SAFE_DELETE(pModelData);
 	}
 	else
 	{
+		for(size_t i=0;i< vtTemp.size();++i)
+		{
+
+		}
+
 		MaterialData* pMaterialData = new MaterialData();
 
 		for (size_t i = 0; i < pModelData->vtMeshes.size(); ++i)
 		{
-			MeshGroup* pGroup = pModelData->vtMeshes[i];
+			MeshSubsets* pGroup = pModelData->vtMeshes[i];
 
 			if (pGroup == nullptr)
 				continue;
-
-
 		}
 	}
 

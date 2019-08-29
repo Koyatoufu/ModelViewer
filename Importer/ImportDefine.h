@@ -63,31 +63,20 @@ struct Vertex
 		nStartWeight(0), nWeightCount(0) {}
 };
 
-struct MeshGroup
+struct MeshSubsets
 {
 	std::vector<Vertex> vtVertices;
 	std::vector<DWORD> vtIndicies;
 
 	std::vector<Weight> vtWeights;
 
-	//std::vector<DirectX::XMFLOAT3> vtPositions;
-	//std::vector<DirectX::XMFLOAT2> vtUVs;
-	//std::vector<DirectX::XMFLOAT3> vtNormals;
-
-	//std::vector<DWORD> vtStartWeights;
-	//std::vector<DWORD> vtWeightCount;
-
-	//std::vector<unsigned int> vtIndexDatas;
-	//std::vector<unsigned int> vtUVIndexDatas;
-	//std::vector<unsigned int> vtNormalIndexDatas;
-
-	std::basic_string<TCHAR> strGroupName;
+	std::basic_string<TCHAR> strSubsetName;
 	std::basic_string<TCHAR> strMtlName;
 
 	int nMaterialIdx;
 
-	MeshGroup():nMaterialIdx(0){}
-	~MeshGroup() {}
+	MeshSubsets():nMaterialIdx(0){}
+	~MeshSubsets() {}
 };
 
 struct MaterialData
@@ -127,7 +116,7 @@ struct ModelData
 {
 	std::vector<Joint> vtJoints;
 
-	std::vector< MeshGroup* > vtMeshes;
+	std::vector< MeshSubsets* > vtMeshes;
 	MaterialData* pMaterialData;
 	bool bSkinned;
 
