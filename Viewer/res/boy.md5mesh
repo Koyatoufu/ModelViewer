@@ -36,7 +36,7 @@ joints {
 
 mesh {
 	// meshes: Head
-	shader "texture\\face.dds"
+	shader "texture\face.dds"
 
 	numverts 99
 	vert 0 ( 0.453487 0.77956 ) 0 4
@@ -676,7 +676,7 @@ mesh {
 
 mesh {
 	// meshes: Arms
-	shader "texture\\arms.dds"
+	shader "texture\arms.dds"
 
 	numverts 48
 	vert 0 ( 0.875 0.666667 ) 0 8
@@ -1052,7 +1052,7 @@ mesh {
 
 mesh {
 	// meshes: Torso
-	shader "texture\\shirt.dds"
+	shader "texture\shirt.dds"
 
 	numverts 220
 	vert 0 ( 1.58569 0.967279 ) 0 4
@@ -2451,7 +2451,7 @@ mesh {
 
 mesh {
 	// meshes: Legs
-	shader "texture\\pants.dds"
+	shader "texture\pants.dds"
 
 	numverts 112
 	vert 0 ( 1.0 1.0 ) 0 3
@@ -2925,7 +2925,7 @@ mesh {
 
 mesh {
 	// meshes: Feet
-	shader "texture\\shoes.dds"
+	shader "texture\shoes.dds"
 
 	numverts 76
 	vert 0 ( 0.0 1.0 ) 0 2

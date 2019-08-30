@@ -7,10 +7,10 @@ public:
 	IBaseImporter() {}
 	virtual ~IBaseImporter() {}
 
-	virtual bool CanReadFile() = 0;
-	virtual ModelData* ReadFile() = 0;
+	virtual ModelData* ReadModel(std::basic_string<TCHAR> strFileName) = 0;
 
-
+protected:
+	virtual FILE* ReadFile(std::basic_string<TCHAR> strFileName) = 0;
 private:
 	IBaseImporter(IBaseImporter&) {}
 };

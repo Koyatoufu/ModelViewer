@@ -46,7 +46,7 @@ ModelData* CImportUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
 		eImportFormat = E_IMPORT_FORMAT_OBJ;
 	else if (_tcsicmp(szExt, _T(".fbx")) == 0)
 		eImportFormat = E_IMPORT_FORMAT_FBX;
-	else if (_tcsicmp(szExt, _T(".md5")) == 0)
+	else if (_tcsicmp(szExt, _T(".md5mesh")) == 0)
 		eImportFormat = E_IMPORT_FORMAT_MD5;
 
 	if(eImportFormat == E_IMPORT_FORMAT_MAX)
@@ -60,4 +60,9 @@ ModelData* CImportUtil::LoadModelData(std::basic_string<TCHAR> strFileName)
 	}
 
 	return pModelData;
+}
+
+void * CImportUtil::LoadAnimData(std::basic_string<TCHAR> strFileName)
+{
+	return nullptr;
 }

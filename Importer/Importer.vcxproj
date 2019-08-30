@@ -164,6 +164,7 @@
     <ClInclude Include="ImportUtil.h" />
     <ClInclude Include="FormatImporter.h" />
     <ClInclude Include="SingleTon.h" />
+    <ClInclude Include="txtImporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImportUtil.cpp" />

@@ -1,6 +1,8 @@
 #include "FormatImporter.h"
 
-struct tempVertexGroup
+#include <map>
+
+struct TempVertexGroup
 {
 	std::vector<DirectX::XMFLOAT3> vtPositions;
 	std::vector<DirectX::XMFLOAT2> vtUVs;
@@ -17,6 +19,9 @@ struct tempVertexGroup
 	std::vector<DWORD> vtWeightCount;
 
 	std::vector<DWORD> vtIndicies;
+	std::vector<Weight> vtWeight;
+
+	int nNumTri;
 };
 
 CFormatImporter::CFormatImporter()
@@ -55,6 +60,7 @@ ModelData * CFormatImporter::LoadModel(std::basic_string<TCHAR> strFileName, E_I
 
 	return pData;
 }
+//LoadModel
 
 ModelData * CFormatImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 {
@@ -116,13 +122,14 @@ ModelData * CFormatImporter::TxtLoad(std::basic_string<TCHAR> strFileName)
 		pGroup->vtIndicies.push_back(i);
 	}
 
-	pModelData->vtMeshes.push_back(pGroup);
+	pModelData->vtMeshSubsets.push_back(pGroup);
 
 	// Close the model file.
 	fIn.close();
 
 	return pModelData;
 }
+//LoadTxt
 
 ModelData * CFormatImporter::FbxLoad(std::basic_string<TCHAR> strFileName)
 {
@@ -130,6 +137,7 @@ ModelData * CFormatImporter::FbxLoad(std::basic_string<TCHAR> strFileName)
 
 	return pModelData;
 }
+//LoadFbx
 
 //directX øﬁº’¡¬«•∞Ë obj ø¿∏•º’ ¡¬«•∞Ë
 //blender or max∏∏ ¥Î¿¿?
@@ -153,9 +161,9 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 	int nTotalVertex = 0;
 
-	tempVertexGroup *pTempVertexGroup = nullptr;
+	TempVertexGroup *pTempVertexGroup = nullptr;
 
-	std::vector<tempVertexGroup*> vtVertexGroups;
+	std::vector<TempVertexGroup*> vtVertexGroups;
 
 	int nRes = 0;
 
@@ -182,7 +190,7 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 		{
 			nTotalVertex = 0;
 			
-			pTempVertexGroup = new tempVertexGroup();
+			pTempVertexGroup = new TempVertexGroup();
 			vtVertexGroups.push_back(pTempVertexGroup);
 
 			TCHAR szGroupName[128] = {};
@@ -337,7 +345,7 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 			if (vtVertexGroups[i] == nullptr)
 				continue;
 
-			tempVertexGroup* pGroup = vtVertexGroups[i];
+			TempVertexGroup* pGroup = vtVertexGroups[i];
 
 			MeshSubsets* pMeshSubsets = new MeshSubsets();
 
@@ -360,7 +368,7 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 				pMeshSubsets->vtIndicies.push_back(pGroup->vtIndicies[j]);
 			}
 
-			pModelData->vtMeshes.push_back(pMeshSubsets);
+			pModelData->vtMeshSubsets.push_back(pMeshSubsets);
 		}
 
 		if (_tcslen(szMtlName) > 0)
@@ -381,178 +389,300 @@ ModelData * CFormatImporter::ObjLoad(std::basic_string<TCHAR> strFileName)
 
 	return pModelData;
 }
+//LoadObj
 
 ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 {
 	if (strFileName.empty())
 		return nullptr;
 
-	FILE* pFile = nullptr;
-
-	errno_t error = _tfopen_s(&pFile, strFileName.c_str(), _T("r"));
-
-	if (error)
-		return nullptr;
+	std::basic_ifstream<TCHAR, std::char_traits<TCHAR>> fileIn(strFileName);
+	
+	//std::wifstream wif;
 
 	ModelData* pModelData = new ModelData();
-
-	int nRes = 0;
 
 	int nNumOfSubsets = 0;
 	int nNumOfJoints = 0;
 
-	std::vector<std::basic_string<TCHAR>> vtDiifuseNames;
+	std::map<std::basic_string<TCHAR>, std::basic_string<TCHAR>> mapMaterials;
 
-	std::vector<tempVertexGroup*> vtTemp;
+	std::vector<TempVertexGroup> vtTemp;
 
-	while (nRes != EOF)
+	std::basic_string<TCHAR> strCheck;
+
+	std::basic_string<TCHAR> strFilePath = GetPathName(strFileName);
+
+	if (fileIn)
 	{
-		TCHAR szLineHeader[256];
-
-		nRes = _ftscanf_s(pFile, _T("%s"), szLineHeader, 256);
-		
-		if (nRes == EOF)
-			break;
-
-		if (_tcscmp(szLineHeader, _T("numJoints")) == 0)
+		while (fileIn)
 		{
-			size_t nSize = 0;
-			
-			nRes = _ftscanf_s(pFile, _T("%d"), &nNumOfJoints);
+			fileIn >> strCheck;
 
-			if( nSize > 0 )
+			if (strCheck.compare(_T("numJoints")) == 0)
+			{
+				fileIn >> nNumOfJoints;
+
 				pModelData->vtJoints.reserve(nNumOfJoints);
-		}
-		else if (_tcscmp(szLineHeader, _T("numMeshes")) == 0)
-		{
-			size_t nSize = 0;
-
-			nRes = _ftscanf_s(pFile, _T("%d"), &nNumOfSubsets);
-
-			if (nSize > 0)
-				pModelData->vtMeshes.reserve(nNumOfSubsets);
-		}
-		else if (_tcscmp(szLineHeader, _T("joints")) == 0)
-		{
-			for (int i = 0; i < nNumOfJoints; ++i)
-			{
-				Joint joint;
-
-				while (_tcsstr(szLineHeader, _T("\"")) != 0)
-				{
-					nRes = _ftscanf_s(pFile, _T("%s"), szLineHeader, 256);
-				}
-				
-				joint.strName = szLineHeader;
-
-				size_t nFind = joint.strName.find(_T("\""));
-
-				while (nFind != joint.strName.npos)
-				{
-					joint.strName.erase(nFind);
-				}
-
-				nRes = _ftscanf_s(pFile, _T("\t%d ( %f %f %f ) ( %f %f %f )"), &joint.nParentID,
-				//nRes = _ftscanf_s(pFile, _T(" %d ( %f %f %f ) ( %f %f %f )"), &joint.nParentID,
-					&joint.position.x, &joint.position.y, &joint.position.z, 
-					&joint.orientation.x, &joint.orientation.y, &joint.orientation.z);
-
-				float t = 1.0f - (joint.orientation.x * joint.orientation.x)
-					- (joint.orientation.y * joint.orientation.y)
-					- (joint.orientation.z * joint.orientation.z);
-
-				if (t < 0.0f)
-					joint.orientation.w = 0.0f;
-				else
-					joint.orientation.w = -sqrtf(t);
-
-				pModelData->vtJoints.push_back(joint);
 			}
-
-			if (pModelData->vtJoints.size() != nNumOfJoints)
+			else if (strCheck.compare(_T("numMeshes")) == 0)
 			{
-				SAFE_DELETE(pModelData);
-				break;
+				fileIn >> nNumOfSubsets;
+
+				pModelData->vtMeshSubsets.reserve(nNumOfSubsets);
 			}
-		}
-		else if (_tcscmp(szLineHeader, _T("mesh")) == 0)
-		{
-			tempVertexGroup* pGroup = new tempVertexGroup();
-
-			while (_tcscmp(szLineHeader, _T("}")) != 0)
+			else if (strCheck.compare(_T("joints")) == 0)
 			{
-				nRes = _ftscanf_s(pFile, _T("%s"), szLineHeader, 256);
+				fileIn >> strCheck; // Skip the "{"
 
-				if (_tcscmp(szLineHeader, _T("meshes:")) == 0)
+				for (int i = 0; i < nNumOfJoints; ++i)
 				{
-					TCHAR strName[128] = {};
-					nRes = _ftscanf_s(pFile, _T("%s"), strName, 128);
+					Joint tempJoint;
 
-					pGroup->strGroupName = strName;
+					fileIn >> tempJoint.strName;
 
-					pGroup->strMtlName = _T("mtl_");
-					pGroup->strMtlName += strName;
-				}
-				else if (_tcscmp(szLineHeader, _T("shader")) == 0)
-				{
-					while (_tcsstr(szLineHeader, _T("\"")) != 0)
+					if (tempJoint.strName[tempJoint.strName.size() - 1] != '"')
 					{
-						nRes = _ftscanf_s(pFile, _T("%s"), szLineHeader, 256);
-					}
-
-					std::basic_string<TCHAR> strTemp = szLineHeader;
-
-					size_t nFind = strTemp.find(_T("\""));
-
-					while (nFind != strTemp.npos)
-						strTemp.erase(nFind);
-
-					vtDiifuseNames.push_back(strTemp);
-				}
-				else if (_tcscmp(szLineHeader, _T("numverts")) == 0)
-				{
-					int nVertexNum = 0;
-
-					nRes = _ftscanf_s(pFile, _T(" %d"), &nVertexNum);
-
-					if (nVertexNum < 1)
-					{
-						SAFE_DELETE(pGroup);
-						continue;
-					}
-
-					for (int i = 0; i < nVertexNum; ++i)
-					{
-						while (_tcsstr(szLineHeader, _T("vert")) != 0)
+						TCHAR checkChar;
+						bool bIsIointNameFound = false;
+						while (!bIsIointNameFound)
 						{
-							nRes = _ftscanf_s(pFile, _T("%s"), szLineHeader, 256);
+							checkChar = fileIn.get();
+
+							if (checkChar == '"')
+								bIsIointNameFound = true;
+
+							tempJoint.strName += checkChar;
+						}
+					}
+
+					size_t nFind = tempJoint.strName.find(_T("\""));
+
+					while (nFind != tempJoint.strName.npos)
+					{
+						tempJoint.strName.erase(nFind, 1);
+						nFind = tempJoint.strName.find(_T("\""));
+					}
+
+					fileIn >> tempJoint.nParentID;
+
+					fileIn >> strCheck; // Skip the "("
+
+					fileIn >> tempJoint.position.x >> tempJoint.position.z >> tempJoint.position.y;
+
+					fileIn >> strCheck >> strCheck; // Skip the ")" and "("
+
+					fileIn >> tempJoint.orientation.x >> tempJoint.orientation.z >> tempJoint.orientation.y;
+
+					float t = 1.0f - (tempJoint.orientation.x * tempJoint.orientation.x)
+						- (tempJoint.orientation.y * tempJoint.orientation.y)
+						- (tempJoint.orientation.z * tempJoint.orientation.z);
+
+					if (t < 0.0f)
+						tempJoint.orientation.w = 0.0f;
+					else
+						tempJoint.orientation.w = -sqrtf(t);
+
+					pModelData->vtJoints.push_back(tempJoint);
+
+					std::getline(fileIn, strCheck);		// Skip rest of this line
+				}
+
+				//if (pModelData->vtJoints.size() != nNumOfJoints)
+				//	break;
+
+				fileIn >> strCheck;					// Skip the "}"
+			}
+			else if (strCheck.compare(_T("mesh")) == 0)
+			{
+				fileIn >> strCheck; // Skip the "{"
+
+				fileIn >> strCheck; // Skip the //
+
+				fileIn >> strCheck;
+
+				bool bFailed = false;
+
+				TempVertexGroup tempVertexGroup;
+
+				while ( strCheck.compare(_T("}")) != 0 )
+				{
+					if (strCheck.compare(_T("meshes:")) == 0)
+					{
+						fileIn >> strCheck;
+
+						tempVertexGroup.strGroupName = strCheck;
+					}
+					else if (strCheck.compare(_T("shader")) == 0)
+					{
+						std::wstring strDiffusePath;
+						fileIn >> strDiffusePath;			// Get texture's filename
+
+						// Take spaces into account if filename or material name has a space in it
+						if (strDiffusePath[strDiffusePath.size() - 1] != '"')
+						{
+							TCHAR checkChar;
+							bool fileNameFound = false;
+							while (!fileNameFound)
+							{
+								checkChar = fileIn.get();
+
+								if (checkChar == '"')
+									fileNameFound = true;
+
+								strDiffusePath += checkChar;
+							}
 						}
 
-						int nIndex = 0;
+						size_t nFind = strDiffusePath.find(_T("\""));
 
-						DirectX::XMFLOAT2 uvTemp;
-						int nStartWeight = 0;
-						int nWeightCount = 0;
+						while (nFind != strDiffusePath.npos)
+						{
+							strDiffusePath.erase(nFind, 1);
+							nFind = strDiffusePath.find(_T("\""));
+						}
 
-						nRes = _ftscanf_s(pFile, _T(" %d ( %f %f ) %d %d"), &nIndex,
-							&uvTemp.x, &uvTemp.y, &nStartWeight, &nWeightCount);
+						std::basic_string<TCHAR> strMtlName = strDiffusePath;
 
-						pGroup->vtUVs.push_back(uvTemp);
-						pGroup->vtStartWeights.push_back(nStartWeight);
-						pGroup->vtWeightCount.push_back(nWeightCount);
+						nFind = strMtlName.find_last_of(_T("\\"));
+
+						if (nFind != strMtlName.npos)
+						{
+							strMtlName.erase(0, nFind+1);
+						}
+
+						nFind = strMtlName.find_last_of(_T("."));
+
+						if (nFind != strDiffusePath.npos)
+						{
+							strMtlName.erase(nFind, strDiffusePath.size() -1);
+						}
+
+						strMtlName = _T("mtl_") + strMtlName;
+						tempVertexGroup.strMtlName = strMtlName;
+
+						std::map<std::basic_string<TCHAR>, std::basic_string<TCHAR>>::iterator iter;
+						
+						iter = mapMaterials.find(strMtlName);
+
+						if (iter == mapMaterials.end())
+						{
+							std::pair < std::basic_string<TCHAR>, std::basic_string<TCHAR >> pair;
+
+							pair.first = strMtlName;
+							pair.second = strFilePath + strDiffusePath;
+
+							mapMaterials.insert(pair);
+						}
+
+						std::getline(fileIn, strCheck);				// Skip rest of this line
 					}
-				}
-				else if (_tcscmp(szLineHeader, _T("numtris")) == 0)
-				{
+					else if (strCheck.compare(_T("numverts")) == 0)
+					{
+						int nNumVertex = 0;
 
-				}
-				else if (_tcscmp(szLineHeader, _T("numweights")) == 0)
-				{
+						fileIn >> nNumVertex;
 
+						std::getline(fileIn, strCheck);				// Skip rest of this line
+
+						for (int i = 0; i < nNumVertex; ++i)
+						{
+							int nIndex = 0;
+
+							DirectX::XMFLOAT2 uvTemp;
+							int nStartWeight = 0;
+							int nWeightCount = 0;
+
+							fileIn >> strCheck						// Skip "vert # ("
+								>> nIndex							// Check Index
+								>> strCheck;
+
+							fileIn >> uvTemp.x >> uvTemp.y;
+
+							fileIn >> strCheck;						// Skip ")"
+
+							fileIn >> nStartWeight;
+							fileIn >> nWeightCount;
+
+							tempVertexGroup.vtUVs.push_back(uvTemp);
+							tempVertexGroup.vtStartWeights.push_back(nStartWeight);
+							tempVertexGroup.vtWeightCount.push_back(nWeightCount);
+
+							std::getline(fileIn, strCheck);			// Skip rest of this line
+						}
+					}
+					else if (strCheck.compare(_T("numtris")) == 0)
+					{
+						int nNumTri = 0;
+
+						fileIn >> nNumTri;
+
+						std::getline(fileIn, strCheck);				// Skip rest of this line
+
+						tempVertexGroup.nNumTri = nNumTri;
+
+						for (int i = 0; i < nNumTri; ++i)
+						{
+							fileIn >> strCheck; // Skip "tri"
+							fileIn >> strCheck; // Skip tri counter
+
+							int narTempIndex[3] = {};
+
+							// Store the 3 indices
+
+							fileIn >> narTempIndex[0];
+							fileIn >> narTempIndex[1];
+							fileIn >> narTempIndex[2];
+							
+							//fileIn >> narTempIndex[3];
+							
+							tempVertexGroup.vtIndicies.push_back(narTempIndex[0]);
+							tempVertexGroup.vtIndicies.push_back(narTempIndex[1]);
+							tempVertexGroup.vtIndicies.push_back(narTempIndex[2]);
+
+							std::getline(fileIn, strCheck);				// Skip rest of this line
+						}
+					}
+					else if (strCheck.compare(_T("numweights")) == 0)
+					{
+						int nNumWeights = 0;
+
+						fileIn >> nNumWeights;
+
+						std::getline(fileIn, strCheck);				// Skip rest of this line
+
+						for (int i = 0; i < nNumWeights; ++i)
+						{
+							Weight tempWeight;
+
+							fileIn >> strCheck >> strCheck;		// Skip "weight #"
+
+							fileIn >> tempWeight.nJointID;				// Store weight's joint ID
+
+							fileIn >> tempWeight.fBias;					// Store weight's influence over a vertex
+
+							fileIn >> strCheck;						// Skip "("
+
+							fileIn >> tempWeight.position.x					// Store weight's pos in joint's local space
+								>> tempWeight.position.z
+								>> tempWeight.position.y;
+
+							tempVertexGroup.vtWeight.push_back(tempWeight);
+
+							std::getline(fileIn, strCheck);			// Skip rest of this line
+						}
+					}
+					else
+					{
+						std::getline(fileIn, strCheck);
+					}
+
+					fileIn >> strCheck;
 				}
+
+				if (bFailed == false)
+					vtTemp.push_back(tempVertexGroup);
 			}
-
-			vtTemp.push_back(pGroup);
 		}
 	}
 
@@ -564,18 +694,151 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 	{
 		for(size_t i=0;i< vtTemp.size();++i)
 		{
+			MeshSubsets* pSubsets = new MeshSubsets;
+			
+			TempVertexGroup tempGroup = vtTemp[i];
 
+			for (int j = 0; j < tempGroup.vtWeightCount.size(); ++j)
+			{
+				Vertex tempVertex;
+
+				for (int k = 0; k < (int)tempGroup.vtWeightCount[j]; ++k)
+				{
+					int nindex = tempGroup.vtStartWeights[j] + k;
+
+					Weight tempWeight = tempGroup.vtWeight[nindex];
+					Joint tempJoint = pModelData->vtJoints[tempWeight.nJointID];
+
+					DirectX::XMVECTOR tempJointOrientation = 
+						DirectX::XMVectorSet(tempJoint.orientation.x, tempJoint.orientation.y, tempJoint.orientation.z, tempJoint.orientation.w);
+					DirectX::XMVECTOR tempWeightPos = 
+						DirectX::XMVectorSet(tempWeight.position.x, tempWeight.position.y, tempWeight.position.z, 0.0f);
+
+					DirectX::XMVECTOR tempJointOrientationConjugate =
+						DirectX::XMVectorSet(-tempJoint.orientation.x, -tempJoint.orientation.y, -tempJoint.orientation.z, tempJoint.orientation.w);
+
+					DirectX::XMFLOAT3 rotatePoint;
+					DirectX::XMStoreFloat3(&rotatePoint, 
+						DirectX::XMQuaternionMultiply(DirectX::XMQuaternionMultiply(tempJointOrientation, tempWeightPos), tempJointOrientationConjugate));
+
+					tempVertex.position.x += (tempJoint.position.x + rotatePoint.x) * tempWeight.fBias;
+					tempVertex.position.y += (tempJoint.position.y + rotatePoint.y) * tempWeight.fBias;
+					tempVertex.position.z += (tempJoint.position.z + rotatePoint.z) * tempWeight.fBias;
+				}
+
+				tempVertex.UV = tempGroup.vtUVs[j];
+
+				pSubsets->vtVertices.push_back(tempVertex);
+			}
+
+			for (int j = 0; j < (int)tempGroup.vtIndicies.size(); ++j)
+				pSubsets->vtIndicies.push_back(tempGroup.vtIndicies[j]);
+
+			for (int j = 0; j < (int)tempGroup.vtWeight.size(); ++j)
+				pSubsets->vtWeights.push_back(tempGroup.vtWeight[j]);
+
+			//caculate normal
+			std::vector<DirectX::XMFLOAT3> tempNormal;
+
+			//normalized and unnormalized normals
+			DirectX::XMFLOAT3 unnormalized = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+			//Used to get vectors (sides) from the position of the verts
+			float vecX, vecY, vecZ;
+
+			//Two edges of our triangle
+			DirectX::XMVECTOR edge1 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+			DirectX::XMVECTOR edge2 = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+			//Compute face normals
+			for (int i = 0; i < tempGroup.nNumTri; ++i)
+			{
+				//Get the vector describing one edge of our triangle (edge 0,2)
+				vecX = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3)]].position.x - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.x;
+				vecY = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3)]].position.y - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.y;
+				vecZ = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3)]].position.z - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.z;
+				edge1 = DirectX::XMVectorSet(vecX, vecY, vecZ, 0.0f);	//Create our first edge
+
+				//Get the vector describing another edge of our triangle (edge 2,1)
+				vecX = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.x - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 1]].position.x;
+				vecY = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.y - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 1]].position.y;
+				vecZ = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].position.z - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 1]].position.z;
+				edge2 = DirectX::XMVectorSet(vecX, vecY, vecZ, 0.0f);	//Create our second edge
+
+				//Cross multiply the two edge vectors to get the un-normalized face normal
+				DirectX::XMStoreFloat3(&unnormalized, DirectX::XMVector3Cross(edge1, edge2));
+
+				tempNormal.push_back(unnormalized);
+			}
+
+			//Compute vertex normals (normal Averaging)
+			DirectX::XMVECTOR normalSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+			int facesUsing = 0;
+			float tX, tY, tZ;	//temp axis variables
+
+			//Go through each vertex
+			for (int i = 0; i < pSubsets->vtVertices.size(); ++i)
+			{
+				//Check which triangles use this vertex
+				for (int j = 0; j < tempGroup.nNumTri; ++j)
+				{
+					if (pSubsets->vtIndicies[j * 3] == i ||
+						pSubsets->vtIndicies[(j * 3) + 1] == i ||
+						pSubsets->vtIndicies[(j * 3) + 2] == i)
+					{
+						tX = DirectX::XMVectorGetX(normalSum) + tempNormal[j].x;
+						tY = DirectX::XMVectorGetY(normalSum) + tempNormal[j].y;
+						tZ = DirectX::XMVectorGetZ(normalSum) + tempNormal[j].z;
+
+						normalSum = DirectX::XMVectorSet(tX, tY, tZ, 0.0f);	//If a face is using the vertex, add the unormalized face normal to the normalSum
+
+						facesUsing++;
+					}
+				}
+
+				//Get the actual normal by dividing the normalSum by the number of faces sharing the vertex
+				normalSum = normalSum / facesUsing;
+
+				//Normalize the normalSum vector
+				normalSum = DirectX::XMVector3Normalize(normalSum);
+
+				//Store the normal and tangent in our current vertex
+				pSubsets->vtVertices[i].normal.x = -DirectX::XMVectorGetX(normalSum);
+				pSubsets->vtVertices[i].normal.y = -DirectX::XMVectorGetY(normalSum);
+				pSubsets->vtVertices[i].normal.z = -DirectX::XMVectorGetZ(normalSum);
+
+				//Clear normalSum, facesUsing for next vertex
+				normalSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+				facesUsing = 0;
+			}
+
+			pSubsets->strMtlName = tempGroup.strMtlName;
+			pSubsets->strSubsetName = tempGroup.strGroupName;
+
+			pModelData->vtMeshSubsets.push_back(pSubsets);
 		}
 
 		MaterialData* pMaterialData = new MaterialData();
 
-		for (size_t i = 0; i < pModelData->vtMeshes.size(); ++i)
+		std::map< std::basic_string<TCHAR>, std::basic_string<TCHAR> >::iterator iter;
+		
+		for ( iter = mapMaterials.begin();	iter != mapMaterials.end(); iter++)
 		{
-			MeshSubsets* pGroup = pModelData->vtMeshes[i];
+			MaterialData::MaterialInfo info;
 
-			if (pGroup == nullptr)
-				continue;
+			info.strDiffuseMap = iter->second;
+			info.strName = iter->first;
+			
+			info.diffuse  = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			info.ambient  = DirectX::XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
+			info.specular = DirectX::XMFLOAT4(0.5f,0.5f,0.5f,1.0f);
+
+			info.fSpecularDistance = 10.0f;
+
+			pMaterialData->vtMaterialInfo.push_back(info);
 		}
+
+		pModelData->pMaterialData = pMaterialData;
 	}
 
 	return pModelData;
@@ -723,7 +986,12 @@ MaterialData * CFormatImporter::LoadMaterialObj(std::basic_string<TCHAR> strFile
 			if (pInfo == nullptr)
 				continue;
 
-			pData->vtMaterialInfo.push_back(pInfo);
+			pData->vtMaterialInfo.push_back(*pInfo);
+		}
+
+		for (int i = 0; i < vtInfos.size(); ++i)
+		{
+			SAFE_DELETE(vtInfos[i]);
 		}
 	}
 

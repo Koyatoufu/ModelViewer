@@ -72,10 +72,8 @@ struct MeshSubsets
 
 	std::basic_string<TCHAR> strSubsetName;
 	std::basic_string<TCHAR> strMtlName;
-
-	int nMaterialIdx;
-
-	MeshSubsets():nMaterialIdx(0){}
+	
+	MeshSubsets() {}
 	~MeshSubsets() {}
 };
 
@@ -101,33 +99,25 @@ struct MaterialData
 		int nIluminationOption;
 	};
 
-	std::vector<MaterialInfo*> vtMaterialInfo;
-
-	~MaterialData()
-	{
-		for (size_t i = 0; i < vtMaterialInfo.size(); ++i)
-		{
-			SAFE_DELETE(vtMaterialInfo[i]);
-		}
-	}
+	std::vector<MaterialInfo> vtMaterialInfo;
 };
 
 struct ModelData
 {
 	std::vector<Joint> vtJoints;
 
-	std::vector< MeshSubsets* > vtMeshes;
+	std::vector< MeshSubsets* > vtMeshSubsets;
 	MaterialData* pMaterialData;
 	bool bSkinned;
 
 	ModelData() :bSkinned(false), pMaterialData(nullptr){}
 	~ModelData()
 	{
-		for (int i = 0; i < vtMeshes.size(); ++i)
+		for (int i = 0; i < vtMeshSubsets.size(); ++i)
 		{
-			SAFE_DELETE(vtMeshes[i]);
+			SAFE_DELETE(vtMeshSubsets[i]);
 		}
-		vtMeshes.clear();
+		vtMeshSubsets.clear();
 
 		SAFE_DELETE(pMaterialData);
 	}

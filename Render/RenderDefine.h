@@ -64,13 +64,13 @@ struct VertexType
 	DirectX::XMFLOAT3 tangent;
 	DirectX::XMFLOAT3 biTangent;
 
-	int nStartWeight;
-	int nWeightCount;
+	//int nStartWeight;
+	//int nWeightCount;
 
-	VertexType(): 
-		position(0.0f, 0.0f, 0.0f),UV(0.0f, 0.0f),normal(0.0f, 0.0f, 0.0f),
-		tangent(0.0f, 0.0f, 0.0f),biTangent(0.0f, 0.0f, 0.0f), 
-		nStartWeight(0),nWeightCount(0) {}
+	VertexType() :
+		position(0.0f, 0.0f, 0.0f), UV(0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f),
+		tangent(0.0f, 0.0f, 0.0f), biTangent(0.0f, 0.0f, 0.0f) {}
+		//, nStartWeight(0),nWeightCount(0) {}
 };
 
 struct JointType

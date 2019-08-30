@@ -15,11 +15,12 @@ CLightModel::~CLightModel()
 HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
-	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\sphere.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_one.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_two.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
+	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\boy.md5mesh"));
 
 	if (pModelData == nullptr)
 		return E_FAIL;
@@ -37,12 +38,18 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 
 void CLightModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferType * pMatrixBuffer, LightBufferType * pLightBuffer, CameraBufferType * pCameraBuffer)
 {
-	DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
-	pMatrixBuffer->world = pMatrixBuffer->world * matRot;
+	MatrixBufferType matrixBuffer = *pMatrixBuffer;
+
+	//DirectX::XMVECTOR vecTrnas = DirectX::XMLoadFloat3(&m_vecPosition);
+	//DirectX::XMMATRIX matTrans = DirectX::XMMatrixTranslationFromVector(vecTrnas);
+
+	//DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
+	//matrixBuffer.world = pMatrixBuffer->world * matTrans * matRot;
 
 	for (size_t i = 0; i < m_vtSubsets.size(); ++i)
 	{
-		ModelSubsets* pSubSet = m_vtSubsets[i];
+		ModelSubsets* pSubSet = m_vtSubsets[0];
+		//ModelSubsets* pSubSet = m_vtSubsets[i];
 
 		if (pSubSet == nullptr)
 			continue;
@@ -56,7 +63,7 @@ void CLightModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferType 
 			if (pMaterial == nullptr)
 				continue;
 
-			m_pShader->Render(pDeviceContext, (int)(pSubSet->vtIndices.size()), pMaterial, pMatrixBuffer, pLightBuffer, pCameraBuffer);
+			m_pShader->Render(pDeviceContext, (int)(pSubSet->vtIndices.size()), pMaterial, &matrixBuffer, pLightBuffer, pCameraBuffer);
 		}
 	}
 }
@@ -69,18 +76,35 @@ void CLightModel::Update()
 	{
 		m_fTestRotation -= 360.f;
 	}
+
+	static bool bSwitch = false;
+
+	if (bSwitch)
+	{
+		m_vecPosition.y += 0.005f;
+
+		if (m_vecPosition.y >= 10.0f)
+			bSwitch = false;
+	}
+	else
+	{
+		m_vecPosition.y -= 0.005f;
+
+		if (m_vecPosition.y < 0.0f)
+			bSwitch = true;
+	}
 }
 
 HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	int i;
 
-	if ( pModelData == nullptr || pModelData->vtMeshes.size() < 1 )
+	if ( pModelData == nullptr || pModelData->vtMeshSubsets.size() < 1 )
 		return E_FAIL;
 	
-	for (i = 0; i < pModelData->vtMeshes.size(); ++i)
+	for (i = 0; i < pModelData->vtMeshSubsets.size(); ++i)
 	{
-		MeshSubsets* pGroup = pModelData->vtMeshes[i];
+		MeshSubsets* pGroup = pModelData->vtMeshSubsets[i];
 
 		//if ( pGroup == nullptr || 
 		//	pGroup->vtIndicies.size() < 1 ||
@@ -104,15 +128,15 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 		{
 			VertexType tempVertex;
 
-			tempVertex.position = pGroup->vtVertices[i].position;
-			tempVertex.normal = pGroup->vtVertices[i].normal;
-			tempVertex.UV = pGroup->vtVertices[i].UV;
+			tempVertex.position = pGroup->vtVertices[j].position;
+			tempVertex.normal = pGroup->vtVertices[j].normal;
+			tempVertex.UV = pGroup->vtVertices[j].UV;
 
-			tempVertex.nStartWeight = pGroup->vtVertices[i].nStartWeight;
-			tempVertex.nWeightCount = pGroup->vtVertices[i].nWeightCount;
+			//tempVertex.nStartWeight = pGroup->vtVertices[j].nStartWeight;
+			//tempVertex.nWeightCount = pGroup->vtVertices[j].nWeightCount;
 
-			tempVertex.tangent = pGroup->vtVertices[i].tangent;
-			tempVertex.biTangent = pGroup->vtVertices[i].biTangent;
+			tempVertex.tangent = pGroup->vtVertices[j].tangent;
+			tempVertex.biTangent = pGroup->vtVertices[j].biTangent;
 
 			pSubSet->vtVertices.push_back(tempVertex);
 		}
@@ -194,35 +218,32 @@ HRESULT CLightModel::InitMaterial(ID3D11Device * pDevice, ModelData * pModelData
 	{
 		for (int i = 0; i < pModelData->pMaterialData->vtMaterialInfo.size(); i++)
 		{
-			MaterialData::MaterialInfo* pInfo = pModelData->pMaterialData->vtMaterialInfo[i];
-
-			if (pInfo == nullptr)
-				continue;
+			MaterialData::MaterialInfo info = pModelData->pMaterialData->vtMaterialInfo[i];
 
 			CMaterial* pMaterial = new CMaterial;
 
-			DirectX::XMFLOAT4 ambient = pInfo->ambient;
-			DirectX::XMFLOAT4 diffuse = pInfo->ambient;
-			DirectX::XMFLOAT4 specular = pInfo->ambient;
+			DirectX::XMFLOAT4 ambient = info.ambient;
+			DirectX::XMFLOAT4 diffuse = info.ambient;
+			DirectX::XMFLOAT4 specular = info.ambient;
 
 			pMaterial->Initialize(diffuse, ambient, specular);
 
-			if (pInfo->strDiffuseMap.empty() == false)
+			if (info.strDiffuseMap.empty() == false)
 			{
-				pMaterial->AddTexture(pDevice, pInfo->strDiffuseMap);
+				pMaterial->AddTexture(pDevice, info.strDiffuseMap);
 			}
-			if (pInfo->strNormalMap.empty() == false)
+			if (info.strNormalMap.empty() == false)
 			{
-				pMaterial->AddTexture(pDevice, pInfo->strNormalMap, ETEXTURE_NORMAL);
+				pMaterial->AddTexture(pDevice, info.strNormalMap, ETEXTURE_NORMAL);
 			}
-			if (pInfo->strSpecularMap.empty() == false)
+			if (info.strSpecularMap.empty() == false)
 			{
-				pMaterial->AddTexture(pDevice, pInfo->strSpecularMap, ETEXTURE_SPECULAR);
+				pMaterial->AddTexture(pDevice, info.strSpecularMap, ETEXTURE_SPECULAR);
 			}
 
-			pMaterial->SetName(pInfo->strName);
+			pMaterial->SetName(info.strName);
 
-			m_mapMaterial.insert(std::pair<std::basic_string<TCHAR>,CMaterial*>(pInfo->strName,pMaterial));
+			m_mapMaterial.insert(std::pair<std::basic_string<TCHAR>,CMaterial*>(info.strName,pMaterial));
 		}
 
 		if (m_mapMaterial.size() > 0)

@@ -16,5 +16,5 @@ public:
 	DirectX::ScratchImage LoadTextureFromFile(std::basic_string<TCHAR> strFileName);
 
 	ModelData* LoadModelData(std::basic_string<TCHAR> strFileName);
-
+	void* LoadAnimData(std::basic_string<TCHAR> strFileName);
 };
