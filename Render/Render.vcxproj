@@ -167,6 +167,7 @@
     <ClInclude Include="ColorModel.h" />
     <ClInclude Include="ColorShader.h" />
     <ClInclude Include="D3Dclass.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightModel.h" />
     <ClInclude Include="LightShader.h" />

@@ -98,6 +98,9 @@
     <ClInclude Include="Light.h">
       <Filter>헤더 파일\Render</Filter>
     </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>헤더 파일\Etc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">

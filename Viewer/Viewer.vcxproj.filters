@@ -26,6 +26,12 @@
     <ClInclude Include="WinApi.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CpuChecker.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -35,6 +41,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="WinApi.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CpuChecker.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,5 +72,10 @@
     <None Include="Shader\tutorial\texture.vs">
       <Filter>Shader\tutorial</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="DefaultShader.hlsl">
+      <Filter>Shader\tutorial</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
