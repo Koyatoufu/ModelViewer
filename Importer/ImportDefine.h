@@ -97,6 +97,11 @@ struct MaterialData
 		float fSpecularDistance;
 		float fAlpha;
 		int nIluminationOption;
+
+		MaterialInfo():
+			ambient(0.0f,0.0f,0.0f,0.0f),diffuse(0.0f,0.0f,0.0f,0.0f),specular(0.0f,0.0f,0.0f,0.0f),
+			fSpecularDistance(0.0f),fAlpha(0.0f),nIluminationOption(0)
+		{}
 	};
 
 	std::vector<MaterialInfo> vtMaterialInfo;

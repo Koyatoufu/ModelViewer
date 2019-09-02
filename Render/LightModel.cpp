@@ -16,9 +16,6 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
-	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\sphere.obj"));
-	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_one.obj"));
-	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\CH_BILLY_RF_two.obj"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
 	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\boy.md5mesh"));
 
@@ -38,21 +35,25 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 
 void CLightModel::Render(ID3D11DeviceContext * pDeviceContext, MatrixBufferType * pMatrixBuffer, LightBufferType * pLightBuffer, CameraBufferType * pCameraBuffer)
 {
-	MatrixBufferType matrixBuffer = *pMatrixBuffer;
-
-	//DirectX::XMVECTOR vecTrnas = DirectX::XMLoadFloat3(&m_vecPosition);
-	//DirectX::XMMATRIX matTrans = DirectX::XMMatrixTranslationFromVector(vecTrnas);
-
-	//DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
-	//matrixBuffer.world = pMatrixBuffer->world * matTrans * matRot;
-
 	for (size_t i = 0; i < m_vtSubsets.size(); ++i)
 	{
-		ModelSubsets* pSubSet = m_vtSubsets[0];
-		//ModelSubsets* pSubSet = m_vtSubsets[i];
+		//ModelSubsets* pSubSet = m_vtSubsets[0];
+		ModelSubsets* pSubSet = m_vtSubsets[i];
 
 		if (pSubSet == nullptr)
 			continue;
+
+		MatrixBufferType matrixBuffer = *pMatrixBuffer;
+
+		//DirectX::XMFLOAT3 vecposition = m_vecPosition;
+
+		//DirectX::XMVECTOR vecTrnas = DirectX::XMLoadFloat3(&vecposition);
+		DirectX::XMVECTOR vecTrnas = DirectX::XMLoadFloat3(&m_vecPosition);
+		DirectX::XMMATRIX matTrans = DirectX::XMMatrixTranslationFromVector(vecTrnas);
+
+		DirectX::XMMATRIX matRot = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_fTestRotation));
+		matrixBuffer.world = pMatrixBuffer->world * matTrans * matRot;
+		//matrixBuffer.world = pMatrixBuffer->world * matTrans;
 
 		RenderBuffers(pDeviceContext, pSubSet);
 
@@ -77,22 +78,22 @@ void CLightModel::Update()
 		m_fTestRotation -= 360.f;
 	}
 
-	static bool bSwitch = false;
+	//static bool bSwitch = false;
 
-	if (bSwitch)
-	{
-		m_vecPosition.y += 0.005f;
+	//if (bSwitch)
+	//{
+	//	m_vecPosition.y += 0.005f;
 
-		if (m_vecPosition.y >= 10.0f)
-			bSwitch = false;
-	}
-	else
-	{
-		m_vecPosition.y -= 0.005f;
+	//	if (m_vecPosition.y >= 10.0f)
+	//		bSwitch = false;
+	//}
+	//else
+	//{
+	//	m_vecPosition.y -= 0.005f;
 
-		if (m_vecPosition.y < 0.0f)
-			bSwitch = true;
-	}
+	//	if (m_vecPosition.y < 0.0f)
+	//		bSwitch = true;
+	//}
 }
 
 HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
@@ -147,24 +148,6 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 			return E_FAIL;
 		}
 
-		// Set up the description of the static vertex buffer.
-		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDesc.ByteWidth = sizeof(VertexType) * (UINT)(pSubSet->vtVertices.size());
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vertexBufferDesc.CPUAccessFlags = 0;
-		vertexBufferDesc.MiscFlags = 0;
-
-		// Give the subresource structure a pointer to the vertex data.
-		vertexData.pSysMem = &pSubSet->vtVertices[0];
-
-		if (FAILED(pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &pSubSet->pVertexBuffer)))
-		{
-			SAFE_DELETE(pSubSet);
-			return E_FAIL;
-		}
-
-		//DWORD* parIndices = new DWORD[pGroup->vtIndexDatas.size()];
-
 		for (int j = 0; j < pGroup->vtIndicies.size(); ++j)
 		{
 			DWORD dwIndices = pGroup->vtIndicies[j];
@@ -173,6 +156,36 @@ HRESULT CLightModel::InitBuffers(ID3D11Device * pDevice, ModelData * pModelData)
 		}
 
 		if (pSubSet->vtIndices.size() < 1)
+		{
+			SAFE_DELETE(pSubSet);
+			return E_FAIL;
+		}
+
+		for (int j = 0; j < pGroup->vtWeights.size(); ++j)
+		{
+			Weight groupWeight = pGroup->vtWeights[j];
+			WeightType tempWeight;
+
+			tempWeight.fBias = groupWeight.fBias;
+			tempWeight.nJointID = groupWeight.nJointID;
+			tempWeight.position = groupWeight.position;
+
+			pSubSet->vtWeights.push_back(tempWeight);
+		}
+
+		// Set up the description of the static vertex buffer.
+		vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		//vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		vertexBufferDesc.ByteWidth = sizeof(VertexType) * (UINT)(pSubSet->vtVertices.size());
+		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertexBufferDesc.CPUAccessFlags = 0;
+		//vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		vertexBufferDesc.MiscFlags = 0;
+
+		// Give the subresource structure a pointer to the vertex data.
+		vertexData.pSysMem = &pSubSet->vtVertices[0];
+
+		if (FAILED(pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &pSubSet->pVertexBuffer)))
 		{
 			SAFE_DELETE(pSubSet);
 			return E_FAIL;
@@ -223,8 +236,8 @@ HRESULT CLightModel::InitMaterial(ID3D11Device * pDevice, ModelData * pModelData
 			CMaterial* pMaterial = new CMaterial;
 
 			DirectX::XMFLOAT4 ambient = info.ambient;
-			DirectX::XMFLOAT4 diffuse = info.ambient;
-			DirectX::XMFLOAT4 specular = info.ambient;
+			DirectX::XMFLOAT4 diffuse = info.diffuse;
+			DirectX::XMFLOAT4 specular = info.specular;
 
 			pMaterial->Initialize(diffuse, ambient, specular);
 

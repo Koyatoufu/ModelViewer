@@ -46,7 +46,7 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 	ID3D11Device* pDevice = m_pD3D->GetDevice();
 
 	m_pCamera = new CCamera();
-	m_pCamera->SetPosition(0.0f, 15.0f, -20.0f);
+	m_pCamera->SetPosition(0.0f, 15.0f, -500.0f);
 
 	m_pLight = new CLight();
 	m_pLight->SetDirection(0.0f, -1.0f, 1.0f);

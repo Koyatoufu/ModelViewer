@@ -727,6 +727,8 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 				}
 
 				tempVertex.UV = tempGroup.vtUVs[j];
+				tempVertex.nStartWeight = tempGroup.vtStartWeights[j];
+				tempVertex.nWeightCount = tempGroup.vtWeightCount[j];
 
 				pSubsets->vtVertices.push_back(tempVertex);
 			}
@@ -742,6 +744,10 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 
 			//normalized and unnormalized normals
 			DirectX::XMFLOAT3 unnormalized = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+			std::vector<DirectX::XMFLOAT3> tempTangent;
+			DirectX::XMFLOAT3 tangent = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			float tcU1, tcV1, tcU2, tcV2;
 
 			//Used to get vectors (sides) from the position of the verts
 			float vecX, vecY, vecZ;
@@ -769,10 +775,25 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 				DirectX::XMStoreFloat3(&unnormalized, DirectX::XMVector3Cross(edge1, edge2));
 
 				tempNormal.push_back(unnormalized);
+
+				tcU1 = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3)]].UV.x - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].UV.x;
+				tcV1 = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3)]].UV.y - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].UV.y;
+
+				//Find second texture coordinate edge 2d vector
+				tcU2 = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].UV.x - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 1]].UV.x;
+				tcV2 = pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 2]].UV.y - pSubsets->vtVertices[pSubsets->vtIndicies[(i * 3) + 1]].UV.y;
+
+				//Find tangent using both tex coord edges and position edges
+				tangent.x = (tcV1 * DirectX::XMVectorGetX(edge1) - tcV2 * DirectX::XMVectorGetX(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
+				tangent.y = (tcV1 * DirectX::XMVectorGetY(edge1) - tcV2 * DirectX::XMVectorGetY(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
+				tangent.z = (tcV1 * DirectX::XMVectorGetZ(edge1) - tcV2 * DirectX::XMVectorGetZ(edge2)) * (1.0f / (tcU1 * tcV2 - tcU2 * tcV1));
+
+				tempTangent.push_back(tangent);
 			}
 
 			//Compute vertex normals (normal Averaging)
 			DirectX::XMVECTOR normalSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+			DirectX::XMVECTOR tangentSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 			int facesUsing = 0;
 			float tX, tY, tZ;	//temp axis variables
 
@@ -792,23 +813,37 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 
 						normalSum = DirectX::XMVectorSet(tX, tY, tZ, 0.0f);	//If a face is using the vertex, add the unormalized face normal to the normalSum
 
+						//We can reuse tX, tY, tZ to sum up tangents
+						tX = DirectX::XMVectorGetX(tangentSum) + tempTangent[j].x;
+						tY = DirectX::XMVectorGetY(tangentSum) + tempTangent[j].y;
+						tZ = DirectX::XMVectorGetZ(tangentSum) + tempTangent[j].z;
+
+						tangentSum = DirectX::XMVectorSet(tX, tY, tZ, 0.0f); //sum up face tangents using this vertex
+
 						facesUsing++;
 					}
 				}
 
 				//Get the actual normal by dividing the normalSum by the number of faces sharing the vertex
-				normalSum = normalSum / facesUsing;
+				//normalSum = normalSum / facesUsing;
+				normalSum = DirectX::XMVectorDivide(normalSum,DirectX::XMVectorReplicate((float)facesUsing));
 
 				//Normalize the normalSum vector
 				normalSum = DirectX::XMVector3Normalize(normalSum);
+				tangentSum = DirectX::XMVector3Normalize(tangentSum);
 
 				//Store the normal and tangent in our current vertex
 				pSubsets->vtVertices[i].normal.x = -DirectX::XMVectorGetX(normalSum);
 				pSubsets->vtVertices[i].normal.y = -DirectX::XMVectorGetY(normalSum);
 				pSubsets->vtVertices[i].normal.z = -DirectX::XMVectorGetZ(normalSum);
 
+				pSubsets->vtVertices[i].tangent.x = -DirectX::XMVectorGetX(tangentSum);
+				pSubsets->vtVertices[i].tangent.y = -DirectX::XMVectorGetY(tangentSum);
+				pSubsets->vtVertices[i].tangent.z = -DirectX::XMVectorGetZ(tangentSum);
+
 				//Clear normalSum, facesUsing for next vertex
 				normalSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+				tangentSum = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 				facesUsing = 0;
 			}
 
@@ -839,6 +874,8 @@ ModelData * CFormatImporter::MD5Load(std::basic_string<TCHAR> strFileName)
 		}
 
 		pModelData->pMaterialData = pMaterialData;
+
+		pModelData->bSkinned = true;
 	}
 
 	return pModelData;
