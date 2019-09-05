@@ -186,6 +186,7 @@
     <ClCompile Include="ColorModel.cpp" />
     <ClCompile Include="ColorShader.cpp" />
     <ClCompile Include="D3Dclass.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightModel.cpp" />
     <ClCompile Include="LightShader.cpp" />

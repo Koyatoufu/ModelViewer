@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "WinApi.h"
 #include "resource.h"
+#include "input.h"
+#include "Renderer.h"
+#include "Timer.h"
+#include "CpuChecker.h"
 
 #define MAX_LOADSTRING 100
 
@@ -15,8 +19,11 @@ CWinAPI::CWinAPI() : m_hWnd(NULL),m_hInstance(NULL),m_bLoop(false)
 
 CWinAPI::~CWinAPI()
 {
+	CCpuChecker::ReleaseInstnace();
+	CTimer::ReleaseInstnace();
+
 	CRenderer::ReleaseInstnace();
-	m_pRenderer = nullptr;
+	CInput::ReleaseInstnace();
 }
 
 HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
@@ -61,10 +68,18 @@ HRESULT CWinAPI::InitWindow(HINSTANCE hInstance, int nCmdShow)
 
 	m_hWnd = hWnd;
 
-	m_pRenderer = CRenderer::CreateInstance();
+	CRenderer* pRenderer = CRenderer::CreateInstance();
 
-	if (FAILED(m_pRenderer->Initialize(m_hWnd, nWidth, nHeight,false,true)))
+	if (FAILED(pRenderer->Initialize(m_hWnd, nWidth, nHeight,false,true)))
 		return E_FAIL;
+
+	CInput* pInput = CInput::CreateInstance();
+	
+	if (FAILED(pInput->Initialize(hInstance, hWnd, nWidth, nHeight)))
+		return E_FAIL;
+
+	CTimer::CreateInstance();
+	CCpuChecker::CreateInstance();
 
 	return S_OK;
 }
@@ -88,10 +103,26 @@ void CWinAPI::Loop()
 		}
 		else
 		{
-			if (m_pRenderer)
+			CTimer* pTimer = CTimer::GetInstance();
+			CCpuChecker* pCpuChecker = CCpuChecker::GetInstance();
+			CInput* pInput = CInput::GetInstance();
+			CRenderer* pRenderer = CRenderer::GetInstance();
+
+			float fDelta = 0.0f;
+
+			if (pTimer)
 			{
-				m_pRenderer->Update();
-				m_pRenderer->Render();
+				pTimer->UpdateTimer();
+				fDelta = pTimer->GetTickTime() / 60.0f;
+			}
+
+			if (pInput)
+				pInput->Update();
+
+			if (pRenderer)
+			{
+				pRenderer->Update(fDelta);
+				pRenderer->Render();
 			}
 		}
 	}

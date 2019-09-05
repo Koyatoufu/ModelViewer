@@ -16,7 +16,7 @@ CTimer::CTimer():
 	
 	m_fTicksPerMs = ((float)m_nFrequency / 1000.f);
 
-	QueryPerformanceCounter((LARGE_INTEGER*)m_nTickStartTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&m_nTickStartTime);
 }
 
 CTimer::~CTimer()
@@ -30,9 +30,12 @@ void CTimer::UpdateTimer()
 	INT64 nCurrentTime = 0;
 	float fTimeDifference = 0.0f;
 
-	QueryPerformanceCounter((LARGE_INTEGER*)nCurrentTime);
+	QueryPerformanceCounter((LARGE_INTEGER*)&nCurrentTime);
 
 	fTimeDifference = (float)(nCurrentTime - m_nTickStartTime);
+
+	m_fFrameTime = fTimeDifference / m_fTicksPerMs;
+
 	m_nTickStartTime = nCurrentTime;
 
 	//update FPS

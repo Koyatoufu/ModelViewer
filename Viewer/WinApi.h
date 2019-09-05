@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include "SingleTon.h"
-#include "Renderer.h"
 
 class CWinAPI : public CSingleTonT<CWinAPI>
 {
@@ -9,7 +8,6 @@ class CWinAPI : public CSingleTonT<CWinAPI>
 private:
 	HWND m_hWnd;
 	HINSTANCE m_hInstance;
-	CRenderer* m_pRenderer;
 
 	bool m_bLoop;
 protected:

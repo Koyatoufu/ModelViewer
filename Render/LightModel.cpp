@@ -16,8 +16,8 @@ HRESULT CLightModel::Initialize(ID3D11Device * pDevice, ModelData * pModelData)
 {
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.txt"));
 	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\cube.obj"));
-	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
-	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\boy.md5mesh"));
+	pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\two.obj"));
+	//pModelData = CImportUtil::GetInstance()->LoadModelData(_T(".\\res\\boy.md5mesh"));
 
 	if (pModelData == nullptr)
 		return E_FAIL;

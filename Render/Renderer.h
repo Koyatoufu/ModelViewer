@@ -35,7 +35,7 @@ protected:
 public:
 	HRESULT Initialize(HWND hWnd,int nWidth, int nHeight, bool bFullScreen, bool bSync);
 
-	void Update();
+	void Update(float fTimeDelta);
 	void Render();
 
 	CCamera* GetRendererCamera() { return m_pCamera; }

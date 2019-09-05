@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "ImportUtil.h"
+#include "input.h"
 
 CRenderer::CRenderer():
 	m_hWnd(nullptr),
@@ -74,8 +75,22 @@ HRESULT CRenderer::Initialize(HWND hWnd, int nWidth, int nHeight, bool bFullScre
 	return S_OK;
 }
 
-void CRenderer::Update()
+void CRenderer::Update(float fTimeDelta)
 {
+	if (CInput::GetInstance())
+	{
+		POINT point = CInput::GetInstance()->GetMouseLocation();
+		int nWheelValue = CInput::GetInstance()->GetMouseWheelValue();
+
+		DirectX::XMFLOAT3 cameraPosition = m_pCamera->GetPosition();
+
+		if (nWheelValue)
+			//cameraPosition.z += nWheelValue;
+			cameraPosition.z += nWheelValue * fTimeDelta;
+
+		m_pCamera->SetPosition(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+	}
+
 	m_pCamera->Update();
 
 	m_pTestModel->Update();
